@@ -1,7 +1,7 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderTestDates(container, profile) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h1>📅 Exam Test Dates</h1>
             <button class="btn btn-primary" style="width: auto;" id="add-test-date-btn">Add New Test Date</button>
@@ -54,7 +54,7 @@ export async function renderTestDates(container, profile) {
                 </tbody>
             </table>
         </div>
-    \`
+    `
 
     const list = document.getElementById('test-dates-table-body')
     const addBtn = document.getElementById('add-test-date-btn')
@@ -76,28 +76,28 @@ export async function renderTestDates(container, profile) {
         const { data, error } = await supabase.from('test_dates').select('*').order('exam_date', { ascending: true })
 
         if (error) {
-            list.innerHTML = \`<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--danger);">\${error.message}</td></tr>\`
+            list.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--danger);">${error.message}</td></tr>`
             return
         }
 
         if (data.length === 0) {
             list.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No upcoming test dates.</td></tr>'
         } else {
-            list.innerHTML = data.map(d => \`
+            list.innerHTML = data.map(d => `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem; font-weight: 600;">\${d.exam_name}</td>
-                    <td style="padding: 1rem;">\${d.exam_level}</td>
-                    <td style="padding: 1rem;">\${new Date(d.exam_date).toLocaleDateString()}</td>
-                    <td style="padding: 1rem; color: \${new Date(d.registration_deadline) < new Date() ? 'var(--danger)' : 'inherit'}">\${d.registration_deadline ? new Date(d.registration_deadline).toLocaleDateString() : '--'}</td>
-                    <td style="padding: 1rem;">\${d.location || '--'}</td>
+                    <td style="padding: 1rem; font-weight: 600;">${d.exam_name}</td>
+                    <td style="padding: 1rem;">${d.exam_level}</td>
+                    <td style="padding: 1rem;">${new Date(d.exam_date).toLocaleDateString()}</td>
+                    <td style="padding: 1rem; color: ${new Date(d.registration_deadline) < new Date() ? 'var(--danger)' : 'inherit'}">${d.registration_deadline ? new Date(d.registration_deadline).toLocaleDateString() : '--'}</td>
+                    <td style="padding: 1rem;">${d.location || '--'}</td>
                     <td style="padding: 1rem;">
-                        <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" id="del-\${d.id}">Delete</button>
+                        <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" id="del-${d.id}">Delete</button>
                     </td>
                 </tr>
-            \`).join('')
+            `).join('')
 
             data.forEach(d => {
-                document.getElementById(\`del-\${d.id}\`).addEventListener('click', async () => {
+                document.getElementById(`del-${d.id}`).addEventListener('click', async () => {
                     if (confirm('Delete this test date?')) {
                         await supabase.from('test_dates').delete().eq('id', d.id)
                         loadTestDates()

@@ -1,7 +1,7 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderClasses(container) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h1>📚 Classes</h1>
             <button class="btn btn-primary" style="width: auto;" id="add-class">Create New Class</button>
@@ -92,7 +92,7 @@ export async function renderClasses(container) {
                 </tbody>
             </table>
         </div>
-    \`
+    `
 
     const tableBody = document.getElementById('classes-table-body')
     const addBtn = document.getElementById('add-class')
@@ -126,31 +126,31 @@ export async function renderClasses(container) {
         // Fetch classes with enrollment counts
         const { data: classes, error } = await supabase
             .from('classes')
-            .select(\`
+            .select(`
                 *,
                 levels(name),
                 profiles(full_name),
                 enrollments(count)
-            \`)
+            `)
             .order('created_at', { ascending: false })
 
         if (error) {
-            tableBody.innerHTML = \`<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--danger);">Error: \${error.message}</td></tr>\`
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--danger);">Error: ${error.message}</td></tr>`
             return
         }
 
-        tableBody.innerHTML = classes.map(c => \`
+        tableBody.innerHTML = classes.map(c => `
             <tr style="border-bottom: 1px solid var(--border);">
-                <td style="padding: 1rem; font-weight: 600;">\${c.name}</td>
-                <td style="padding: 1rem;">\${c.levels?.name || '--'}</td>
-                <td style="padding: 1rem;">\${c.profiles?.full_name || 'Unassigned'}</td>
-                <td style="padding: 1rem; font-size: 0.85rem;">\${new Date(c.start_date).toLocaleDateString()} - \${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'Ongoing'}</td>
-                <td style="padding: 1rem;">\${c.enrollments[0]?.count || 0} / \${c.max_students}</td>
+                <td style="padding: 1rem; font-weight: 600;">${c.name}</td>
+                <td style="padding: 1rem;">${c.levels?.name || '--'}</td>
+                <td style="padding: 1rem;">${c.profiles?.full_name || 'Unassigned'}</td>
+                <td style="padding: 1rem; font-size: 0.85rem;">${new Date(c.start_date).toLocaleDateString()} - ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'Ongoing'}</td>
+                <td style="padding: 1rem;">${c.enrollments[0]?.count || 0} / ${c.max_students}</td>
                 <td style="padding: 1rem;">
-                    <button class="btn btn-secondary roster-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" data-id="\${c.id}" data-name="\${c.name}">Manage Roster</button>
+                    <button class="btn btn-secondary roster-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" data-id="${c.id}" data-name="${c.name}">Manage Roster</button>
                 </td>
             </tr>
-        \`).join('')
+        `).join('')
 
         document.querySelectorAll('.roster-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -163,7 +163,7 @@ export async function renderClasses(container) {
 
     async function openRoster(classId, className) {
         currentClassId = classId
-        document.getElementById('roster-title').textContent = \`Roster for \${className}\`
+        document.getElementById('roster-title').textContent = `Roster for ${className}`
         rosterContainer.style.display = 'block'
         formContainer.style.display = 'none'
         
@@ -177,32 +177,32 @@ export async function renderClasses(container) {
 
         const { data: enrollments, error } = await supabase
             .from('enrollments')
-            .select(\`
+            .select(`
                 *,
                 profiles(full_name)
-            \`)
+            `)
             .eq('class_id', classId)
 
         if (error) {
-            rosterBody.innerHTML = \`<tr><td colspan="4" style="text-align: center; padding: 1rem; color: var(--danger);">\${error.message}</td></tr>\`
+            rosterBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 1rem; color: var(--danger);">${error.message}</td></tr>`
             return
         }
 
         if (enrollments.length === 0) {
             rosterBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No students enrolled yet.</td></tr>'
         } else {
-            rosterBody.innerHTML = enrollments.map(e => \`
+            rosterBody.innerHTML = enrollments.map(e => `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 0.75rem 1rem; font-weight: 500;">\${e.profiles?.full_name}</td>
-                    <td style="padding: 0.75rem 1rem; font-size: 0.85rem;">\${new Date(e.enrolled_at).toLocaleDateString()}</td>
+                    <td style="padding: 0.75rem 1rem; font-weight: 500;">${e.profiles?.full_name}</td>
+                    <td style="padding: 0.75rem 1rem; font-size: 0.85rem;">${new Date(e.enrolled_at).toLocaleDateString()}</td>
                     <td style="padding: 0.75rem 1rem;">
-                        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 0.5rem; background: #fef9c3; color: #854d0e;">\${e.status}</span>
+                        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 0.5rem; background: #fef9c3; color: #854d0e;">${e.status}</span>
                     </td>
                     <td style="padding: 0.75rem 1rem; text-align: right;">
-                        <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" onclick="unenrollStudent('\${e.id}')">Remove</button>
+                        <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" onclick="unenrollStudent('${e.id}')">Remove</button>
                     </td>
                 </tr>
-            \`).join('')
+            `).join('')
         }
     }
 
@@ -217,7 +217,7 @@ export async function renderClasses(container) {
         if (allStudents) {
             const available = allStudents.filter(s => !enrolledIds.includes(s.id))
             select.innerHTML = '<option value="">Select a student...</option>' + 
-                available.map(s => \`<option value="\${s.id}">\${s.full_name} (\${s.email})</option>\`).join('')
+                available.map(s => `<option value="${s.id}">${s.full_name} (${s.email})</option>`).join('')
         }
     }
 
@@ -262,12 +262,12 @@ export async function renderClasses(container) {
 
         if (levelsRes.data) {
             levelSelect.innerHTML = '<option value="">Select Level</option>' + 
-                levelsRes.data.map(l => \`<option value="\${l.id}">\${l.name}</option>\`).join('')
+                levelsRes.data.map(l => `<option value="${l.id}">${l.name}</option>`).join('')
         }
         
         if (teachersRes.data) {
             teacherSelect.innerHTML = '<option value="">Select Teacher</option>' + 
-                teachersRes.data.map(t => \`<option value="\${t.id}">\${t.full_name}</option>\`).join('')
+                teachersRes.data.map(t => `<option value="${t.id}">${t.full_name}</option>`).join('')
         }
     }
 

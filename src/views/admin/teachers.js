@@ -1,11 +1,11 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderTeachers(container) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h1>👩‍🏫 Teachers</h1>
             <div style="display: flex; gap: 1rem;">
-                <button class="btn btn-primary" style="width: auto;" id="add-teacher-btn">Invite New Teacher</button>
+                <button class="btn btn-primary" style="width: auto;" id="add-teacher" onclick="window.openAdminAddUserModal('teacher')">Add New Teacher</button>
             </div>
         </div>
 
@@ -49,7 +49,7 @@ export async function renderTeachers(container) {
                 </table>
             </div>
         </div>
-    \`
+    `
 
     const tableBody = document.getElementById('teachers-table-body')
     const unassignedBody = document.getElementById('unassigned-table-body')
@@ -72,7 +72,7 @@ export async function renderTeachers(container) {
             .order('created_at', { ascending: false })
 
         if (error) {
-            tableBody.innerHTML = \`<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--danger);">Error: \${error.message}</td></tr>\`
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--danger);">Error: ${error.message}</td></tr>`
             return
         }
 
@@ -82,35 +82,35 @@ export async function renderTeachers(container) {
         if (teachers.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No teachers assigned yet.</td></tr>'
         } else {
-            tableBody.innerHTML = teachers.map(t => \`
+            tableBody.innerHTML = teachers.map(t => `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem; font-weight: 600;">\${t.full_name}</td>
-                    <td style="padding: 1rem;">\${t.email}</td>
-                    <td style="padding: 1rem;">\${t.phone || '--'}</td>
-                    <td style="padding: 1rem;">\${new Date(t.created_at).toLocaleDateString()}</td>
+                    <td style="padding: 1rem; font-weight: 600;">${t.full_name}</td>
+                    <td style="padding: 1rem;">${t.email}</td>
+                    <td style="padding: 1rem;">${t.phone || '--'}</td>
+                    <td style="padding: 1rem;">${new Date(t.created_at).toLocaleDateString()}</td>
                     <td style="padding: 1rem;">
                         <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" onclick="alert('Manage teacher logic coming soon')">Manage</button>
                     </td>
                 </tr>
-            \`).join('')
+            `).join('')
         }
 
         if (unassigned.length === 0) {
             unassignedBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 1rem;">No unassigned users.</td></tr>'
         } else {
-            unassignedBody.innerHTML = unassigned.map(p => \`
+            unassignedBody.innerHTML = unassigned.map(p => `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem;">\${p.full_name}</td>
-                    <td style="padding: 1rem;">\${p.email}</td>
+                    <td style="padding: 1rem;">${p.full_name}</td>
+                    <td style="padding: 1rem;">${p.email}</td>
                     <td style="padding: 1rem;">
-                        <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" id="promote-\${p.id}">Promote to Teacher</button>
+                        <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" id="promote-${p.id}">Promote to Teacher</button>
                     </td>
                 </tr>
-            \`).join('')
+            `).join('')
 
             unassigned.forEach(p => {
-                document.getElementById(\`promote-\${p.id}\`).addEventListener('click', async () => {
-                    if (confirm(\`Promote \${p.full_name} to Teacher?\`)) {
+                document.getElementById(`promote-${p.id}`).addEventListener('click', async () => {
+                    if (confirm(`Promote ${p.full_name} to Teacher?`)) {
                         const { error: upErr } = await supabase
                             .from('profiles')
                             .update({ role: 'teacher' })

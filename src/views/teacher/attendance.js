@@ -1,7 +1,7 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderAttendance(container, profile) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <h1>📋 Attendance</h1>
         <p>Select a class and date to mark attendance.</p>
 
@@ -14,7 +14,7 @@ export async function renderAttendance(container, profile) {
             </div>
             <div style="width: 200px;">
                 <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem;">Session Date</label>
-                <input type="date" id="attendance-date" value="\${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                <input type="date" id="attendance-date" value="${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
             </div>
             <button class="btn btn-primary" style="width: auto; align-self: end;" id="load-attendance-btn">Load Roster</button>
         </div>
@@ -36,7 +36,7 @@ export async function renderAttendance(container, profile) {
                 <button class="btn btn-primary" style="width: auto;" id="save-attendance-btn">Save Attendance</button>
             </div>
         </div>
-    \`
+    `
 
     const classSelect = document.getElementById('attendance-class-select')
     const dateInput = document.getElementById('attendance-date')
@@ -49,7 +49,7 @@ export async function renderAttendance(container, profile) {
     const { data: classes } = await supabase.from('classes').select('id, name').eq('teacher_id', profile.id)
     if (classes) {
         classSelect.innerHTML = '<option value="">Select a class...</option>' + 
-            classes.map(c => \`<option value="\${c.id}">\${c.name}</option>\`).join('')
+            classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
     }
 
     let roster = []
@@ -92,22 +92,22 @@ export async function renderAttendance(container, profile) {
     })
 
     function renderRoster() {
-        tableBody.innerHTML = roster.map((s, index) => \`
+        tableBody.innerHTML = roster.map((s, index) => `
             <tr style="border-bottom: 1px solid var(--border);">
-                <td style="padding: 1rem; font-weight: 600;">\${s.full_name}</td>
+                <td style="padding: 1rem; font-weight: 600;">${s.full_name}</td>
                 <td style="padding: 1rem;">
-                    <select class="status-select" data-index="\${index}" style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
-                        <option value="present" \${s.status === 'present' ? 'selected' : ''}>Present</option>
-                        <option value="absent" \${s.status === 'absent' ? 'selected' : ''}>Absent</option>
-                        <option value="late" \${s.status === 'late' ? 'selected' : ''}>Late</option>
-                        <option value="excused" \${s.status === 'excused' ? 'selected' : ''}>Excused</option>
+                    <select class="status-select" data-index="${index}" style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                        <option value="present" ${s.status === 'present' ? 'selected' : ''}>Present</option>
+                        <option value="absent" ${s.status === 'absent' ? 'selected' : ''}>Absent</option>
+                        <option value="late" ${s.status === 'late' ? 'selected' : ''}>Late</option>
+                        <option value="excused" ${s.status === 'excused' ? 'selected' : ''}>Excused</option>
                     </select>
                 </td>
                 <td style="padding: 1rem;">
-                    <input type="text" class="notes-input" data-index="\${index}" value="\${s.notes}" placeholder="Optional note..." style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <input type="text" class="notes-input" data-index="${index}" value="${s.notes}" placeholder="Optional note..." style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
                 </td>
             </tr>
-        \`).join('')
+        `).join('')
 
         document.querySelectorAll('.status-select').forEach(sel => {
             sel.addEventListener('change', (e) => {

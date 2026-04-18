@@ -7,7 +7,7 @@ export async function renderStudentDashboard(profile) {
             <aside class="sidebar">
                 <div class="sidebar-header">
                     <h2 class="logo-text" style="font-size: 1.5rem; color: var(--secondary);">G<span>SL</span> Student</h2>
-                    <p style="font-size: 0.8rem; color: var(--gray); font-style: italic;">Willkommen, ${profile.full_name}</p>
+                    <p style="font-size: 0.8rem; color: var(--gray); font-style: italic;">Welcome, ${profile.full_name}</p>
                 </div>
                 <nav class="nav-links">
                     <a href="/student/home" class="nav-link" data-view="home">🏠 Home</a>
@@ -18,6 +18,7 @@ export async function renderStudentDashboard(profile) {
                     <a href="/student/announcements" class="nav-link" data-view="announcements">📢 Announcements</a>
                     <a href="/student/placement-test" class="nav-link" data-view="placement-test">📝 Take Placement Test</a>
                     <a href="/student/exam-dates" class="nav-link" data-view="exam-dates">📅 Exam Dates</a>
+                    <a href="/student/profile" class="nav-link" data-view="profile">👤 My Profile</a>
                     <a href="/login" id="logout-btn" class="nav-link">🚪 Logout</a>
                 </nav>
             </aside>
@@ -83,6 +84,9 @@ async function loadStudentView(view, profile) {
         case 'exam-dates':
             import('./exam_dates.js').then(m => m.renderExamDates(container, profile))
             break
+        case 'profile':
+            import('../shared/profile.js').then(m => m.renderProfile(container, profile))
+            break
         default:
             container.innerHTML = '<h1>' + view + '</h1><p>Module coming soon.</p>'
     }
@@ -113,7 +117,7 @@ async function renderHome(container, profile) {
     }
 
     container.innerHTML = `
-        <h1>Willkommen, ${profile.full_name}!</h1>
+        <h1>Welcome, ${profile.full_name}!</h1>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
             <section class="stat-card">
                 <h3>My Classes</h3>
@@ -230,11 +234,22 @@ async function renderPlacementTestTaking(container, profile) {
                             <p><strong>Recommended Level:</strong> ${result.recommended_level}</p>
                         </div>
                     ` : `
-                        <button class="btn btn-primary" style="width: 100%;" onclick="alert('Placement test taking interface coming soon!')">Start Test</button>
+                        <button class="btn btn-primary start-test-btn" style="width: 100%;" data-test-id="${t.id}">Start Test</button>
                     `}
                 </div>
                 `
             }).join('')}
         </div>
     `;
+
+    document.querySelectorAll('.start-test-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const testId = Number(btn.dataset.testId)
+            const test = tests.find(t => t.id === testId)
+            if (test) {
+                const { renderTestSession } = await import('./placement_test_session.js')
+                renderTestSession(container, profile, test)
+            }
+        })
+    })
 }

@@ -8,7 +8,7 @@ export function renderLogin() {
             <div class="auth-card">
                 <div class="auth-header">
                     <h1 class="logo-text">G<span>SL</span></h1>
-                    <p class="tagline">Deutsch lernen. Leben verändern.</p>
+                    <p class="tagline">Learn German. Change your life.</p>
                 </div>
                 <form id="login-form">
                     <div class="form-group">

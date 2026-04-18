@@ -1,7 +1,7 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderPlacementTests(container, profile) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h1>📝 Placement Tests</h1>
             <button class="btn btn-primary" style="width: auto;" id="create-test-btn">Create New Test</button>
@@ -49,7 +49,7 @@ export async function renderPlacementTests(container, profile) {
                 </tbody>
             </table>
         </div>
-    \`
+    `
 
     const testsList = document.getElementById('tests-table-body')
     const createBtn = document.getElementById('create-test-btn')
@@ -88,26 +88,26 @@ export async function renderPlacementTests(container, profile) {
             return
         }
 
-        questionsList.innerHTML = questions.map((q, qIndex) => \`
+        questionsList.innerHTML = questions.map((q, qIndex) => `
             <div style="background: var(--light); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--border);">
                 <div class="form-group">
-                    <label>Question \${qIndex + 1}</label>
-                    <input type="text" class="q-text" data-index="\${qIndex}" value="\${q.question}" placeholder="e.g. Complete: Wie ___ du?">
+                    <label>Question ${qIndex + 1}</label>
+                    <input type="text" class="q-text" data-index="${qIndex}" value="${q.question}" placeholder="e.g. Complete: Wie ___ du?">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
-                    \${q.options.map((opt, oIndex) => \`
-                        <input type="text" class="q-opt" data-q-index="\${qIndex}" data-o-index="\${oIndex}" value="\${opt}" placeholder="Option \${oIndex + 1}">
-                    \`).join('')}
+                    ${q.options.map((opt, oIndex) => `
+                        <input type="text" class="q-opt" data-q-index="${qIndex}" data-o-index="${oIndex}" value="${opt}" placeholder="Option ${oIndex + 1}">
+                    `).join('')}
                 </div>
                 <div style="margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
                     <div style="flex: 1;">
                         <label style="font-size: 0.8rem;">Correct Answer</label>
-                        <input type="text" class="q-correct" data-index="\${qIndex}" value="\${q.correct}" placeholder="Matches one of the options">
+                        <input type="text" class="q-correct" data-index="${qIndex}" value="${q.correct}" placeholder="Matches one of the options">
                     </div>
-                    <button type="button" class="btn" style="width: auto; color: var(--danger); background: none; border: none;" onclick="removeQuestion(\${qIndex})">Remove</button>
+                    <button type="button" class="btn" style="width: auto; color: var(--danger); background: none; border: none;" onclick="removeQuestion(${qIndex})">Remove</button>
                 </div>
             </div>
-        \`).join('')
+        `).join('')
 
         // Handlers
         document.querySelectorAll('.q-text').forEach(inp => inp.addEventListener('input', e => questions[e.target.dataset.index].question = e.target.value))
@@ -129,26 +129,26 @@ export async function renderPlacementTests(container, profile) {
         const { data, error } = await supabase.from('placement_tests').select('*').order('created_at', { ascending: false })
 
         if (error) {
-            testsList.innerHTML = \`<tr><td colspan="4" style="text-align: center; padding: 2rem;">\${error.message}</td></tr>\`
+            testsList.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem;">${error.message}</td></tr>`
             return
         }
 
         if (data.length === 0) {
             testsList.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No tests created yet.</td></tr>'
         } else {
-            testsList.innerHTML = data.map(t => \`
+            testsList.innerHTML = data.map(t => `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem; font-weight: 600;">\${t.title}</td>
-                    <td style="padding: 1rem;">\${t.questions?.length || 0}</td>
-                    <td style="padding: 1rem;">\${new Date(t.created_at).toLocaleDateString()}</td>
+                    <td style="padding: 1rem; font-weight: 600;">${t.title}</td>
+                    <td style="padding: 1rem;">${t.questions?.length || 0}</td>
+                    <td style="padding: 1rem;">${new Date(t.created_at).toLocaleDateString()}</td>
                     <td style="padding: 1rem;">
-                        <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" id="del-test-\${t.id}">Delete</button>
+                        <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" id="del-test-${t.id}">Delete</button>
                     </td>
                 </tr>
-            \`).join('')
+            `).join('')
             
             data.forEach(t => {
-                document.getElementById(\`del-test-\${t.id}\`).addEventListener('click', async () => {
+                document.getElementById(`del-test-${t.id}`).addEventListener('click', async () => {
                     if (confirm('Delete this test?')) {
                         await supabase.from('placement_tests').delete().eq('id', t.id)
                         loadTests()

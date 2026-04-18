@@ -13,7 +13,7 @@ export function renderLanding(container) {
         </header>
 
         <section class="hero" style="background: linear-gradient(rgba(27, 58, 107, 0.9), rgba(27, 58, 107, 0.9)), url('https://images.unsplash.com/photo-1527891751199-7225231a68dd?auto=format&fit=crop&q=80&w=2070') center/cover; padding: 8rem 2rem; text-align: center; color: var(--white);">
-            <h1 style="font-size: 4rem; font-weight: 800; margin-bottom: 1.5rem;">Deutsch lernen. <br><span style="color: var(--secondary);">Leben verändern.</span></h1>
+            <h1 style="font-size: 4rem; font-weight: 800; margin-bottom: 1.5rem;">Learn German. <br><span style="color: var(--secondary);">Change your life.</span></h1>
             <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto 3rem; opacity: 0.9;">Master German from zero to professional readiness with Algeria's premier language school.</p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
                 <a href="/signup" class="btn btn-secondary" style="width: auto; padding: 1rem 2.5rem; font-size: 1.1rem;">Start for Free</a>

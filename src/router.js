@@ -26,7 +26,7 @@ export async function router() {
     }
     // Public test dates
     if (path === '/test-dates') {
-        mainContent.innerHTML = '<h1>Official German Test Dates</h1><p>Public view coming soon.</p>'
+        import('./views/public/test_dates.js').then(m => m.renderPublicTestDates(mainContent))
         return
     }
 

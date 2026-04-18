@@ -1,7 +1,7 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderFees(container) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h1>💰 Fees</h1>
             <button class="btn btn-primary" style="width: auto;" id="add-fee-btn">Record New Fee/Payment</button>
@@ -54,7 +54,7 @@ export async function renderFees(container) {
                 </tbody>
             </table>
         </div>
-    \`
+    `
 
     const tableBody = document.getElementById('fees-table-body')
     const addBtn = document.getElementById('add-fee-btn')
@@ -76,39 +76,39 @@ export async function renderFees(container) {
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">Loading fees...</td></tr>'
         const { data: fees, error } = await supabase
             .from('fees')
-            .select(\`
+            .select(`
                 *,
                 profiles(full_name)
-            \`)
+            `)
             .order('due_date', { ascending: true })
 
         if (error) {
-            tableBody.innerHTML = \`<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--danger);">Error: \${error.message}</td></tr>\`
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--danger);">Error: ${error.message}</td></tr>`
             return
         }
 
         if (fees.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No fee records found.</td></tr>'
         } else {
-            tableBody.innerHTML = fees.map(f => \`
+            tableBody.innerHTML = fees.map(f => `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem; font-weight: 600;">\${f.profiles?.full_name}</td>
-                    <td style="padding: 1rem;">\${f.amount} DZD</td>
-                    <td style="padding: 1rem;">\${new Date(f.due_date).toLocaleDateString()}</td>
+                    <td style="padding: 1rem; font-weight: 600;">${f.profiles?.full_name}</td>
+                    <td style="padding: 1rem;">${f.amount} DZD</td>
+                    <td style="padding: 1rem;">${new Date(f.due_date).toLocaleDateString()}</td>
                     <td style="padding: 1rem;">
-                        <span style="background: \${f.status === 'paid' ? '#dcfce7' : '#fee2e2'}; color: \${f.status === 'paid' ? '#166534' : '#991b1b'}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 700;">
-                            \${f.status.toUpperCase()}
+                        <span style="background: ${f.status === 'paid' ? '#dcfce7' : '#fee2e2'}; color: ${f.status === 'paid' ? '#166534' : '#991b1b'}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 700;">
+                            ${f.status.toUpperCase()}
                         </span>
                     </td>
                     <td style="padding: 1rem;">
-                        \${f.status !== 'paid' ? \`<button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" id="pay-\${f.id}">Mark as Paid</button>\` : 'No actions'}
+                        ${f.status !== 'paid' ? `<button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" id="pay-${f.id}">Mark as Paid</button>` : 'No actions'}
                     </td>
                 </tr>
-            \`).join('')
+            `).join('')
 
             fees.forEach(f => {
                 if (f.status !== 'paid') {
-                    document.getElementById(\`pay-\${f.id}\`)?.addEventListener('click', async () => {
+                    document.getElementById(`pay-${f.id}`)?.addEventListener('click', async () => {
                         const { error: upErr } = await supabase
                             .from('fees')
                             .update({ status: 'paid', paid_at: new Date().toISOString() })
@@ -127,7 +127,7 @@ export async function renderFees(container) {
         const { data: students } = await supabase.from('profiles').select('*').eq('role', 'student')
         if (students) {
             studentSelect.innerHTML = '<option value="">Select Student</option>' + 
-                students.map(s => \`<option value="\${s.id}">\${s.full_name}</option>\`).join('')
+                students.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('')
         }
     }
 

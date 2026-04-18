@@ -7,7 +7,7 @@ export async function renderTeacherDashboard(profile) {
             <aside class="sidebar">
                 <div class="sidebar-header">
                     <h2 class="logo-text" style="font-size: 1.5rem; color: var(--secondary);">G<span>SL</span> Teacher</h2>
-                    <p style="font-size: 0.8rem; color: var(--gray); font-style: italic;">Willkommen, ${profile.full_name}</p>
+                    <p style="font-size: 0.8rem; color: var(--gray); font-style: italic;">Welcome, ${profile.full_name}</p>
                 </div>
                 <nav class="nav-links">
                     <a href="/teacher/overview" class="nav-link" data-view="overview">📊 My Overview</a>
@@ -15,6 +15,7 @@ export async function renderTeacherDashboard(profile) {
                     <a href="/teacher/attendance" class="nav-link" data-view="attendance">📋 Attendance</a>
                     <a href="/teacher/grades" class="nav-link" data-view="grades">📝 Grades</a>
                     <a href="/teacher/announcements" class="nav-link" data-view="announcements">📢 Announcements</a>
+                    <a href="/teacher/profile" class="nav-link" data-view="profile">👤 My Profile</a>
                     <a href="/login" id="logout-btn" class="nav-link">🚪 Logout</a>
                 </nav>
             </aside>
@@ -70,6 +71,9 @@ async function loadTeacherView(view, profile) {
             break
         case 'announcements':
             import('../shared/announcements.js').then(m => m.renderAnnouncements(container, profile))
+            break
+        case 'profile':
+            import('../shared/profile.js').then(m => m.renderProfile(container, profile))
             break
         default:
             container.innerHTML = '<h1>' + view + '</h1><p>Module coming soon.</p>'

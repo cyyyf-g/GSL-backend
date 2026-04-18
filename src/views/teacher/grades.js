@@ -1,7 +1,7 @@
 import { supabase } from '../../supabase.js'
 
 export async function renderGrades(container, profile) {
-    container.innerHTML = \`
+    container.innerHTML = `
         <h1>📝 Grades</h1>
         <p>Manage student assessments and scores.</p>
 
@@ -29,7 +29,7 @@ export async function renderGrades(container, profile) {
                 </div>
                 <div class="form-group">
                     <label>Date</label>
-                    <input type="date" id="assessment-date" value="\${new Date().toISOString().split('T')[0]}">
+                    <input type="date" id="assessment-date" value="${new Date().toISOString().split('T')[0]}">
                 </div>
             </div>
             
@@ -67,7 +67,7 @@ export async function renderGrades(container, profile) {
                 </tbody>
             </table>
         </div>
-    \`
+    `
 
     const classSelect = document.getElementById('grade-class-select')
     const historyBtn = document.getElementById('load-history-btn')
@@ -81,7 +81,7 @@ export async function renderGrades(container, profile) {
     const { data: classes } = await supabase.from('classes').select('id, name').eq('teacher_id', profile.id)
     if (classes) {
         classSelect.innerHTML = '<option value="">Select a class...</option>' + 
-            classes.map(c => \`<option value="\${c.id}">\${c.name}</option>\`).join('')
+            classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
     }
 
     let currentRoster = []
@@ -116,17 +116,17 @@ export async function renderGrades(container, profile) {
     })
 
     function renderGradeEntry() {
-        gradeEntryBody.innerHTML = currentRoster.map((s, index) => \`
+        gradeEntryBody.innerHTML = currentRoster.map((s, index) => `
             <tr style="border-bottom: 1px solid var(--border);">
-                <td style="padding: 0.75rem; font-weight: 600;">\${s.full_name}</td>
+                <td style="padding: 0.75rem; font-weight: 600;">${s.full_name}</td>
                 <td style="padding: 0.75rem;">
-                    <input type="number" class="score-input" data-index="\${index}" value="\${s.score}" step="0.5" style="width: 80px; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <input type="number" class="score-input" data-index="${index}" value="${s.score}" step="0.5" style="width: 80px; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
                 </td>
                 <td style="padding: 0.75rem;">
-                    <input type="text" class="grade-notes-input" data-index="\${index}" value="\${s.notes}" placeholder="Note..." style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <input type="text" class="grade-notes-input" data-index="${index}" value="${s.notes}" placeholder="Note..." style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
                 </td>
             </tr>
-        \`).join('')
+        `).join('')
 
         document.querySelectorAll('.score-input').forEach(inp => {
             inp.addEventListener('input', (e) => {
@@ -194,23 +194,23 @@ export async function renderGrades(container, profile) {
         // Group by assessment name and date
         const groups = {}
         grades.forEach(g => {
-            const key = \`\${g.assessment_name}|\${g.assessment_date}\`
+            const key = `${g.assessment_name}|${g.assessment_date}`
             if (!groups[key]) groups[key] = { name: g.assessment_name, date: g.assessment_date, scores: [] }
             groups[key].scores.push(g.score)
         })
 
         historyTableBody.innerHTML = Object.values(groups).map(g => {
             const avg = (g.scores.reduce((a, b) => a + b, 0) / g.scores.length).toFixed(1)
-            return \`
+            return `
                 <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem; font-weight: 600;">\${g.name}</td>
-                    <td style="padding: 1rem;">\${new Date(g.date).toLocaleDateString()}</td>
-                    <td style="padding: 1rem;">\${avg}</td>
+                    <td style="padding: 1rem; font-weight: 600;">${g.name}</td>
+                    <td style="padding: 1rem;">${new Date(g.date).toLocaleDateString()}</td>
+                    <td style="padding: 1rem;">${avg}</td>
                     <td style="padding: 1rem;">
                         <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" onclick="alert('Assessment edit not implemented in MVP')">Details</button>
                     </td>
                 </tr>
-            \`
+            `
         }).join('')
     })
 
