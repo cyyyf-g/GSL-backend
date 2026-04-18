@@ -12,10 +12,10 @@ export async function renderTestSession(container, profile, test) {
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                     <div>
                         <h2 style="color: var(--primary);">${test.title}</h2>
-                        <p style="color: var(--gray);">Frage ${currentQuestionIndex + 1} von ${questions.length}</p>
+                        <p style="color: var(--gray);">Question ${currentQuestionIndex + 1} of ${questions.length}</p>
                     </div>
                     <div style="background: var(--light); padding: 0.5rem 1rem; border-radius: 1rem; border: 1px solid var(--border);">
-                        <strong>Punkte: ${q.points || 0}</strong>
+                        <strong>Points: ${q.points || 0}</strong>
                     </div>
                 </div>
 
@@ -41,10 +41,10 @@ export async function renderTestSession(container, profile, test) {
 
                 <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
                     <button id="prev-q" class="btn" style="width: auto; background: var(--white); border: 1px solid var(--border); color: var(--primary); visibility: ${currentQuestionIndex === 0 ? 'hidden' : 'visible'};">
-                        Zurück
+                        Back
                     </button>
                     <button id="next-q" class="btn btn-primary" style="width: auto; padding-left: 3rem; padding-right: 3rem;">
-                        ${currentQuestionIndex === questions.length - 1 ? 'Test abschließen' : 'Weiter'}
+                        ${currentQuestionIndex === questions.length - 1 ? 'Finish Test' : 'Next'}
                     </button>
                 </div>
             </div>
@@ -68,7 +68,7 @@ export async function renderTestSession(container, profile, test) {
 
         document.getElementById('next-q').addEventListener('click', () => {
             if (!userAnswers[q.id]) {
-                alert('Bitte wählen Sie eine Antwort aus.')
+                alert('Please select an answer.')
                 return
             }
 
@@ -82,7 +82,7 @@ export async function renderTestSession(container, profile, test) {
     }
 
     const finishTest = async () => {
-        container.innerHTML = '<div class="loader-container"><div class="loader"></div><p style="margin-top: 1rem;">Ergebnisse werden berechnet...</p></div>'
+        container.innerHTML = '<div class="loader-container"><div class="loader"></div><p style="margin-top: 1rem;">Calculating results...</p></div>'
         
         // Calculate score
         let totalPoints = 0
@@ -114,7 +114,7 @@ export async function renderTestSession(container, profile, test) {
         })
 
         if (error) {
-            alert('Fehler beim Speichern der Ergebnisse: ' + error.message)
+            alert('Error saving results: ' + error.message)
             return
         }
 
@@ -122,21 +122,21 @@ export async function renderTestSession(container, profile, test) {
         container.innerHTML = `
             <div style="max-width: 600px; margin: 0 auto; text-align: center; animation: slideUp 0.6s ease-out;">
                 <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
-                <h2 style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;">Test abgeschlossen!</h2>
-                <p style="color: var(--gray); font-size: 1.1rem; margin-bottom: 3rem;">Vielen Dank für die Teilnahme am Einstufungstest.</p>
+                <h2 style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;">Test Completed!</h2>
+                <p style="color: var(--gray); font-size: 1.1rem; margin-bottom: 3rem;">Thank you for taking the placement test.</p>
                 
                 <div class="stat-card" style="padding: 3rem; border-left: none; border-bottom: 4px solid var(--secondary);">
-                    <p style="text-transform: uppercase; font-weight: bold; color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem;">Dein Ergebnis</p>
+                    <p style="text-transform: uppercase; font-weight: bold; color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem;">Your Score</p>
                     <h1 style="font-size: 4rem; color: var(--primary); margin-bottom: 1.5rem;">${scorePercentage}%</h1>
                     
                     <div style="background: var(--light); padding: 1.5rem; border-radius: 1rem; display: inline-block;">
-                        <p style="margin-bottom: 0.5rem; color: var(--gray);">Empfohlenes Niveau:</p>
+                        <p style="margin-bottom: 0.5rem; color: var(--gray);">Recommended Level:</p>
                         <h2 style="color: var(--secondary); font-size: 2rem;">${recommendedLevel}</h2>
                     </div>
                 </div>
 
                 <button class="btn btn-primary" style="margin-top: 3rem; width: auto; padding: 1rem 3rem;" onclick="location.reload()">
-                    Zurück zum Dashboard
+                    Back to Dashboard
                 </button>
             </div>
         `
