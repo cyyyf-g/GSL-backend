@@ -4,7 +4,6 @@ import { renderSignup } from './views/auth/signup.js'
 import { renderAdminDashboard } from './views/admin/dashboard.js'
 import { renderTeacherDashboard } from './views/teacher/dashboard.js'
 import { renderStudentDashboard } from './views/student/dashboard.js'
-import { renderLanding } from './views/public/landing.js'
 
 const mainContent = document.getElementById('main-content')
 
@@ -13,7 +12,8 @@ export async function router() {
     
     // Public routes (no auth needed)
     if (path === '/') {
-        renderLanding(mainContent)
+        window.history.pushState({}, '', '/login')
+        renderLogin()
         return
     }
     if (path === '/signup') {
