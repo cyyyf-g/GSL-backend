@@ -77,7 +77,7 @@ export async function renderPlacementTests(container, profile) {
             question: '',
             options: ['', '', '', ''],
             correct: '',
-            points: 2
+            points: 1
         })
         renderQuestions()
     })
@@ -89,22 +89,42 @@ export async function renderPlacementTests(container, profile) {
         }
 
         questionsList.innerHTML = questions.map((q, qIndex) => `
-            <div style="background: var(--light); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--border);">
-                <div class="form-group">
-                    <label>Question ${qIndex + 1}</label>
-                    <input type="text" class="q-text" data-index="${qIndex}" value="${q.question}" placeholder="e.g. Complete: Wie ___ du?">
+            <div style="background: var(--light); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--border); position: relative;">
+                <div style="display: flex; gap: 1rem; align-items: top; margin-bottom: 1rem;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.8rem; font-weight: bold;">Question ${qIndex + 1}</label>
+                        <input type="text" class="q-text" data-index="${qIndex}" value="${q.question}" placeholder="e.g. What is the plural of 'Apfel'?" style="margin-top: 0.25rem;">
+                    </div>
+                    <div style="width: 150px;">
+                        <label style="font-size: 0.8rem; font-weight: bold;">Type</label>
+                        <select class="q-type" data-index="${qIndex}" style="margin-top: 0.25rem;">
+                            <option value="multiple_choice" ${q.type === 'multiple_choice' ? 'selected' : ''}>Multiple Choice</option>
+                            <option value="fill" ${q.type === 'fill' ? 'selected' : ''}>Fill in Blank</option>
+                        </select>
+                    </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+
+                ${q.type === 'multiple_choice' ? `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; padding: 1rem; background: var(--white); border-radius: 0.5rem;">
+                    <p style="grid-column: span 2; font-size: 0.75rem; color: var(--gray); margin-bottom: 0.5rem;">Options:</p>
                     ${q.options.map((opt, oIndex) => `
                         <input type="text" class="q-opt" data-q-index="${qIndex}" data-o-index="${oIndex}" value="${opt}" placeholder="Option ${oIndex + 1}">
                     `).join('')}
                 </div>
-                <div style="margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
+                ` : ''}
+
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; align-items: flex-end;">
                     <div style="flex: 1;">
-                        <label style="font-size: 0.8rem;">Correct Answer</label>
-                        <input type="text" class="q-correct" data-index="${qIndex}" value="${q.correct}" placeholder="Matches one of the options">
+                        <label style="font-size: 0.8rem; font-weight: bold;">Correct Answer</label>
+                        <input type="text" class="q-correct" data-index="${qIndex}" value="${q.correct}" placeholder="${q.type === 'multiple_choice' ? 'Must match one option' : 'Correct word or phrase'}" style="margin-top: 0.25rem;">
                     </div>
-                    <button type="button" class="btn" style="width: auto; color: var(--danger); background: none; border: none;" onclick="removeQuestion(${qIndex})">Remove</button>
+                    <div style="width: 80px;">
+                        <label style="font-size: 0.8rem; font-weight: bold;">Points</label>
+                        <input type="number" class="q-points" data-index="${qIndex}" value="${q.points}" style="margin-top: 0.25rem;">
+                    </div>
+                    <button type="button" class="btn" style="width: auto; color: var(--danger); background: none; border: 1px solid #fee2e2; padding: 0.75rem 1rem;" onclick="removeQuestion(${qIndex})">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    </button>
                 </div>
             </div>
         `).join('')
@@ -112,6 +132,11 @@ export async function renderPlacementTests(container, profile) {
         // Handlers
         document.querySelectorAll('.q-text').forEach(inp => inp.addEventListener('input', e => questions[e.target.dataset.index].question = e.target.value))
         document.querySelectorAll('.q-correct').forEach(inp => inp.addEventListener('input', e => questions[e.target.dataset.index].correct = e.target.value))
+        document.querySelectorAll('.q-points').forEach(inp => inp.addEventListener('input', e => questions[e.target.dataset.index].points = parseInt(e.target.value)))
+        document.querySelectorAll('.q-type').forEach(sel => sel.addEventListener('change', e => {
+            questions[e.target.dataset.index].type = e.target.value
+            renderQuestions()
+        }))
         document.querySelectorAll('.q-opt').forEach(inp => inp.addEventListener('input', e => {
             questions[e.target.dataset.qIndex].options[e.target.dataset.oIndex] = e.target.value
         }))

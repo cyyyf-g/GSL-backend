@@ -67,6 +67,23 @@ export async function renderGrades(container, profile) {
                 </tbody>
             </table>
         </div>
+
+        <!-- Edit Grades Modal -->
+        <div id="edit-grades-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px);">
+            <div style="background: white; padding: 2.5rem; border-radius: 1.5rem; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 id="edit-assessment-title" style="color: var(--primary);">Edit Assessment</h2>
+                    <button id="close-edit-modal" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--gray);">&times;</button>
+                </div>
+                <div id="edit-scores-container">
+                    <!-- Scores list here -->
+                </div>
+                <div style="margin-top: 2.5rem; display: flex; gap: 1rem; border-top: 1px solid var(--border); pt: 1.5rem;">
+                    <button class="btn btn-primary" id="update-all-grades-btn" style="flex: 1;">Update All Scores</button>
+                    <button class="btn" id="delete-assessment-btn" style="background: var(--danger); color: white; border: none;">Delete All</button>
+                </div>
+            </div>
+        </div>
     `
 
     const classSelect = document.getElementById('grade-class-select')
@@ -76,6 +93,12 @@ export async function renderGrades(container, profile) {
     const historyView = document.getElementById('grade-history')
     const gradeEntryBody = document.getElementById('grade-entry-body')
     const saveBtn = document.getElementById('save-grades-btn')
+    
+    // Modal elements
+    const editModal = document.getElementById('edit-grades-modal')
+    const closeEditBtn = document.getElementById('close-edit-modal')
+    const editScoresContainer = document.getElementById('edit-scores-container')
+    const updateAllBtn = document.getElementById('update-all-grades-btn')
 
     // Load teacher's classes
     const { data: classes } = await supabase.from('classes').select('id, name').eq('teacher_id', profile.id)
@@ -85,6 +108,7 @@ export async function renderGrades(container, profile) {
     }
 
     let currentRoster = []
+    let editingGrades = []
 
     newBtn.addEventListener('click', async () => {
         const classId = classSelect.value
@@ -168,13 +192,14 @@ export async function renderGrades(container, profile) {
         else {
             alert('Grades saved successfully!')
             assessmentForm.style.display = 'none'
+            loadGradeHistory()
         }
     })
 
-    historyBtn.addEventListener('click', async () => {
+    const loadGradeHistory = async () => {
         const classId = classSelect.value
-        if (!classId) return alert('Please select a class')
-
+        if (!classId) return
+        
         historyView.style.display = 'block'
         assessmentForm.style.display = 'none'
         const historyTableBody = document.getElementById('history-table-body')
@@ -195,11 +220,12 @@ export async function renderGrades(container, profile) {
         const groups = {}
         grades.forEach(g => {
             const key = `${g.assessment_name}|${g.assessment_date}`
-            if (!groups[key]) groups[key] = { name: g.assessment_name, date: g.assessment_date, scores: [] }
+            if (!groups[key]) groups[key] = { name: g.assessment_name, date: g.assessment_date, scores: [], ids: [] }
             groups[key].scores.push(g.score)
+            groups[key].ids.push(g.id)
         })
 
-        historyTableBody.innerHTML = Object.values(groups).map(g => {
+        historyTableBody.innerHTML = Object.values(groups).map((g, i) => {
             const avg = (g.scores.reduce((a, b) => a + b, 0) / g.scores.length).toFixed(1)
             return `
                 <tr style="border-bottom: 1px solid var(--border);">
@@ -207,11 +233,120 @@ export async function renderGrades(container, profile) {
                     <td style="padding: 1rem;">${new Date(g.date).toLocaleDateString()}</td>
                     <td style="padding: 1rem;">${avg}</td>
                     <td style="padding: 1rem;">
-                        <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" onclick="alert('Assessment edit not implemented in MVP')">Details</button>
+                        <button class="btn-edit-assessment btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" data-name="${g.name}" data-date="${g.date}">Edit Scores</button>
                     </td>
                 </tr>
             `
         }).join('')
+
+        document.querySelectorAll('.btn-edit-assessment').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const name = e.target.dataset.name
+                const date = e.target.dataset.date
+                openEditModal(name, date, classId)
+            })
+        })
+    }
+
+    historyBtn.addEventListener('click', loadGradeHistory)
+
+    async function openEditModal(name, date, classId) {
+        document.getElementById('edit-assessment-title').textContent = `${name} (${new Date(date).toLocaleDateString()})`
+        editScoresContainer.innerHTML = '<p>Loading scores...</p>'
+        editModal.style.display = 'flex'
+
+        const { data: grades, error } = await supabase
+            .from('grades')
+            .select('*, profiles(full_name)')
+            .eq('class_id', classId)
+            .eq('assessment_name', name)
+            .eq('assessment_date', date)
+
+        if (error) {
+            editScoresContainer.innerHTML = `<p style="color:red">Error: ${error.message}</p>`
+            return
+        }
+
+        editingGrades = grades
+        renderEditScores()
+    }
+
+    function renderEditScores() {
+        editScoresContainer.innerHTML = editingGrades.map((g, i) => `
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; background: var(--light); padding: 1rem; border-radius: 0.75rem;">
+                <div style="flex: 1; font-weight: 600;">${g.profiles?.full_name}</div>
+                <div style="width: 100px;">
+                    <input type="number" class="edit-score-input" data-index="${i}" value="${g.score}" step="0.5" style="width: 100%; padding: 0.5rem; border-radius: 0.4rem; border: 1px solid var(--border);">
+                </div>
+                <button class="btn-delete-single-grade" data-index="${i}" style="color: var(--danger); background: none; border: none; cursor: pointer;">&times;</button>
+            </div>
+        `).join('')
+
+        document.querySelectorAll('.edit-score-input').forEach(inp => {
+            inp.addEventListener('input', e => {
+                editingGrades[e.target.dataset.index].score = parseFloat(e.target.value)
+            })
+        })
+
+        document.querySelectorAll('.btn-delete-single-grade').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                const idx = e.target.dataset.index
+                const grade = editingGrades[idx]
+                if (confirm(`Delete grade for ${grade.profiles.full_name}?`)) {
+                    const { error } = await supabase.from('grades').delete().eq('id', grade.id)
+                    if (error) alert(error.message)
+                    else {
+                        editingGrades.splice(idx, 1)
+                        renderEditScores()
+                    }
+                }
+            })
+        })
+    }
+
+    updateAllBtn.addEventListener('click', async () => {
+        updateAllBtn.disabled = true
+        updateAllBtn.textContent = 'Updating...'
+
+        const updates = editingGrades.map(g => ({
+            id: g.id,
+            score: g.score,
+            student_id: g.student_id,
+            class_id: g.class_id,
+            assessment_name: g.assessment_name,
+            assessment_date: g.assessment_date,
+            max_score: g.max_score,
+            entered_by: profile.id
+        }))
+
+        // Supabase upsert works well for bulk updates if IDs are present
+        const { error } = await supabase.from('grades').upsert(updates)
+
+        if (error) alert(error.message)
+        else {
+            alert('All grades updated successfully!')
+            editModal.style.display = 'none'
+            loadGradeHistory()
+        }
+        updateAllBtn.disabled = false
+        updateAllBtn.textContent = 'Update All Scores'
+    })
+
+    document.getElementById('delete-assessment-btn').addEventListener('click', async () => {
+        if (confirm('Are you sure you want to delete this ENTIRE assessment for all students?')) {
+            const ids = editingGrades.map(g => g.id)
+            const { error } = await supabase.from('grades').delete().in('id', ids)
+            if (error) alert(error.message)
+            else {
+                alert('Assessment deleted.')
+                editModal.style.display = 'none'
+                loadGradeHistory()
+            }
+        }
+    })
+
+    closeEditBtn.addEventListener('click', () => {
+        editModal.style.display = 'none'
     })
 
     document.getElementById('cancel-grades-btn').addEventListener('click', () => {

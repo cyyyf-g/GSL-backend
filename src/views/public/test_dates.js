@@ -2,23 +2,26 @@ import { supabase } from '../../supabase.js'
 
 export async function renderPublicTestDates(container) {
     container.innerHTML = `
-        <div style="max-width: 1000px; margin: 0 auto; padding: 4rem 2rem; animation: fadeIn 0.8s ease-out;">
-            <div style="text-align: center; margin-bottom: 4rem;">
-                <h1 style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;">Exam Dates</h1>
-                <p style="color: var(--gray); font-size: 1.2rem;">Official dates for Goethe-Zertifikat, TestDaF and ÖSD.</p>
-                <div style="width: 80px; height: 4px; background: var(--secondary); margin: 2rem auto;"></div>
-            </div>
-
-            <div id="public-dates-container">
-                <div class="loader-container"><div class="loader"></div></div>
-            </div>
-
-            <div style="margin-top: 5rem; background: var(--primary); color: white; padding: 3rem; border-radius: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
-                <div>
-                    <h2 style="color: var(--secondary); margin-bottom: 0.5rem;">Ready for your exam?</h2>
-                    <p style="opacity: 0.9;">Sign up now and prepare with our experts.</p>
+        <div style="background: var(--lp-bg); min-height: 100vh; font-family: 'DM Sans', sans-serif; color: white; padding-bottom: 5rem;">
+            <div style="max-width: 1000px; margin: 0 auto; padding: 6rem 2rem; animation: fadeIn 0.8s ease-out;">
+                <div style="text-align: center; margin-bottom: 5rem;">
+                    <div style="color: var(--lp-accent); font-weight: bold; font-size: 0.8rem; letter-spacing: 0.3em; margin-bottom: 1.5rem; text-transform: uppercase;">[ Official Examination ]</div>
+                    <h1 class="font-serif" style="font-size: 4rem; color: white; margin-bottom: 1rem; line-height: 1;">Exam Dates</h1>
+                    <p style="color: var(--lp-text-dim); font-size: 1.1rem; letter-spacing: 0.05em;">GSL Berlin · Official Testing Center</p>
+                    <div style="width: 40px; height: 2px; background: var(--lp-accent); margin: 2.5rem auto;"></div>
                 </div>
-                <a href="/login" class="btn btn-secondary" style="width: auto; padding: 1rem 3.5rem;">Login Now</a>
+
+                <div id="public-dates-container">
+                    <div class="loader-container"><div class="loader"></div></div>
+                </div>
+
+                <div style="margin-top: 6rem; background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 3rem; box-shadow: 0 30px 60px rgba(0,0,0,0.4);">
+                    <div>
+                        <h2 class="font-serif" style="color: var(--lp-accent); font-size: 2.5rem; margin-bottom: 1rem;">Ready for your exam?</h2>
+                        <p style="color: var(--lp-text-dim); font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase;">Sign up now and prepare with our certified experts.</p>
+                    </div>
+                    <a href="/login" class="lp-btn lp-btn-accent" style="width: auto; padding: 1.25rem 4rem;">Secure Your Spot</a>
+                </div>
             </div>
         </div>
     `
@@ -46,30 +49,37 @@ export async function renderPublicTestDates(container) {
     }
 
     datesContainer.innerHTML = `
-        <div style="display: grid; gap: 1.5rem;">
+        <div style="display: grid; gap: 2rem;">
             ${dates.map(d => `
-                <div class="stat-card" style="display: flex; align-items: center; gap: 2rem; padding: 2rem; border-left-width: 8px; flex-wrap: wrap;">
-                    <div style="text-align: center; min-width: 100px; border-right: 1px solid var(--border); padding-right: 2rem;">
-                        <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--gray); font-weight: bold;">
+                <div style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); display: flex; align-items: center; gap: 3rem; padding: 2.5rem; flex-wrap: wrap; transition: transform 0.3s ease; border-radius: 2px;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="text-align: center; min-width: 120px; border-right: 1px solid var(--lp-border-accent); padding-right: 3rem;">
+                        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--lp-accent); font-weight: bold; letter-spacing: 0.2em; margin-bottom: 0.5rem;">
                             ${new Date(d.exam_date).toLocaleString('en-US', { month: 'short' })}
                         </span>
-                        <span style="display: block; font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1;">
+                        <span style="display: block; font-size: 3rem; font-weight: bold; color: white; line-height: 1; font-family: 'DM Serif Display', serif;">
                             ${new Date(d.exam_date).getDate()}
                         </span>
-                        <span style="display: block; font-size: 0.9rem; color: var(--gray);">
+                        <span style="display: block; font-size: 0.8rem; color: var(--lp-text-dim); margin-top: 0.5rem; letter-spacing: 0.1em;">
                             ${new Date(d.exam_date).getFullYear()}
                         </span>
                     </div>
                     <div style="flex: 1;">
-                        <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 0.25rem;">${d.exam_name}</h3>
-                        <p style="color: var(--gray); font-weight: 600;">Level: ${d.exam_level || 'All'}</p>
-                        <div style="display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
-                            <span style="font-size: 0.9rem; color: var(--gray);">📍 ${d.location || 'GSL School'}</span>
-                            <span style="font-size: 0.9rem; color: var(--danger); font-weight: bold;">📝 Deadline: ${d.registration_deadline ? new Date(d.registration_deadline).toLocaleDateString() : '--'}</span>
+                        <div style="color: var(--lp-accent); font-size: 0.6rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.21em; margin-bottom: 0.5rem;">[ Certified Exam ]</div>
+                        <h3 class="font-serif" style="font-size: 1.8rem; color: white; margin-bottom: 0.5rem;">${d.exam_name}</h3>
+                        <div style="display: flex; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; align-items: center;">
+                            <span style="font-size: 0.85rem; color: white; font-weight: bold; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: var(--lp-accent);">Level:</span> ${d.exam_level || 'All'}
+                            </span>
+                            <span style="font-size: 0.85rem; color: var(--lp-text-dim); display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: var(--lp-accent);">📍</span> ${d.location || 'Berlin Center'}
+                            </span>
+                            <span style="font-size: 0.85rem; color: #ff4d4d; font-weight: bold; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: var(--lp-accent);">⌛</span> Deadline: ${d.registration_deadline ? new Date(d.registration_deadline).toLocaleDateString() : '--'}
+                            </span>
                         </div>
                     </div>
                     <div>
-                        <a href="/login" class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;">Reserve Spot</a>
+                        <a href="/login" class="lp-btn lp-btn-outline" style="padding: 1rem 2rem; font-size: 0.7rem;">Reserve Spot</a>
                     </div>
                 </div>
             `).join('')}

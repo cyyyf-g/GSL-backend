@@ -53,14 +53,15 @@ export async function renderTeachers(container) {
 
     const tableBody = document.getElementById('teachers-table-body')
     const unassignedBody = document.getElementById('unassigned-table-body')
-    const inviteBtn = document.getElementById('add-teacher-btn')
+    const addTeacherBtn = document.getElementById('add-teacher')
     const inviteMsg = document.getElementById('teacher-invite-msg')
 
-    inviteBtn.addEventListener('click', () => {
+    addTeacherBtn.addEventListener('click', () => {
+        // Since we have window.openAdminAddUserModal, we use that, but we can also show the manual invite msg
         inviteMsg.style.display = 'block'
     })
 
-    loadTeachers()
+    let allTeachers = []
 
     async function loadTeachers() {
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">Loading teachers...</td></tr>'
@@ -76,23 +77,41 @@ export async function renderTeachers(container) {
             return
         }
 
-        const teachers = allProfiles.filter(p => p.role === 'teacher')
-        const unassigned = allProfiles.filter(p => p.role === 'student' && p.email !== 'admin@gsl.com') // Simple filter for demo
+        allTeachers = allProfiles.filter(p => p.role === 'teacher')
+        const unassigned = allProfiles.filter(p => p.role === 'student' && !p.email.includes('admin'))
 
-        if (teachers.length === 0) {
+        if (allTeachers.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No teachers assigned yet.</td></tr>'
         } else {
-            tableBody.innerHTML = teachers.map(t => `
+            tableBody.innerHTML = allTeachers.map(t => `
                 <tr style="border-bottom: 1px solid var(--border);">
                     <td style="padding: 1rem; font-weight: 600;">${t.full_name}</td>
                     <td style="padding: 1rem;">${t.email}</td>
                     <td style="padding: 1rem;">${t.phone || '--'}</td>
                     <td style="padding: 1rem;">${new Date(t.created_at).toLocaleDateString()}</td>
-                    <td style="padding: 1rem;">
-                        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" onclick="alert('Manage teacher logic coming soon')">Manage</button>
+                    <td style="padding: 1rem; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-edit-teacher" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" data-id="${t.id}">Edit</button>
+                        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; color: var(--danger);" id="demote-${t.id}">Demote</button>
                     </td>
                 </tr>
             `).join('')
+
+            document.querySelectorAll('.btn-edit-teacher').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const teacher = allTeachers.find(t => t.id === e.target.dataset.id)
+                    openEditTeacherModal(teacher)
+                })
+            })
+
+            allTeachers.forEach(t => {
+                document.getElementById(`demote-${t.id}`).addEventListener('click', async () => {
+                    if (confirm(`Demote ${t.full_name} back to Student?`)) {
+                        const { error } = await supabase.from('profiles').update({ role: 'student' }).eq('id', t.id)
+                        if (error) alert(error.message)
+                        else loadTeachers()
+                    }
+                })
+            })
         }
 
         if (unassigned.length === 0) {
@@ -123,4 +142,52 @@ export async function renderTeachers(container) {
             })
         }
     }
+
+    function openEditTeacherModal(teacher) {
+        const modalHtml = `
+            <div id="edit-teacher-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px);">
+                <div style="background: white; padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 450px; box-shadow: var(--shadow-lg);">
+                    <h2 style="margin-bottom: 2rem; color: var(--primary);">Edit Teacher Profile</h2>
+                    <form id="edit-teacher-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="edit-t-name" class="form-input" value="${teacher.full_name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="edit-t-phone" class="form-input" value="${teacher.phone || ''}">
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('#edit-teacher-modal').remove()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `
+        document.body.insertAdjacentHTML('beforeend', modalHtml)
+        
+        document.getElementById('edit-teacher-form').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            const btn = e.target.querySelector('button[type="submit"]')
+            btn.disabled = true; btn.textContent = 'Updating...';
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    full_name: document.getElementById('edit-t-name').value,
+                    phone: document.getElementById('edit-t-phone').value
+                })
+                .eq('id', teacher.id)
+
+            if (error) alert(error.message)
+            else {
+                alert('Teacher updated!')
+                document.getElementById('edit-teacher-modal').remove()
+                loadTeachers()
+            }
+        })
+    }
+
+    loadTeachers()
 }

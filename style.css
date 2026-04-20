@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Cairo:wght@200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
 :root {
   --primary: #1B3A6B; /* Deep Blue */
   --secondary: #F5C518; /* German Gold */
@@ -13,7 +15,19 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Landing Page Premium Tokens */
+  --lp-bg: #0A0A0A;
+  --lp-card-bg: #141414;
+  --lp-accent: #C5A059;
+  --lp-accent-dim: rgba(197, 160, 89, 0.5);
+  --lp-text-main: #F5F5F5;
+  --lp-text-dim: #A0A0A0;
+  --lp-border-accent: rgba(197, 160, 89, 0.2);
+  --lp-red-accent: #CC0000;
+  --lp-red-bright: #FF1A1A;
 }
+
 
 * {
   margin: 0;
@@ -265,3 +279,125 @@ table tr:hover {
 .content {
   animation: fadeIn 0.4s ease-in-out;
 }
+/* Premium Landing Page Styles */
+.lp-body {
+    background-color: var(--lp-bg);
+    color: var(--lp-text-main);
+}
+
+.font-serif { font-family: 'Playfair Display', serif; }
+.font-sans { font-family: 'DM Sans', sans-serif; }
+.font-display { font-family: 'Bebas Neue', sans-serif; }
+.font-arabic { font-family: 'Cairo', sans-serif; }
+
+.text-accent { color: var(--lp-accent); }
+.bg-accent { background-color: var(--lp-accent); }
+.border-accent-subtle { border-color: var(--lp-border-accent); }
+.text-text-dim { color: var(--lp-text-dim); }
+.text-text-main { color: var(--lp-text-main); }
+.bg-card-bg { background-color: var(--lp-card-bg); }
+.bg-red-accent { background-color: var(--lp-red-accent); }
+.text-red-accent { color: var(--lp-red-accent); }
+
+.lp-nav {
+    transition: all 0.3s ease;
+}
+
+.lp-nav-scrolled {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--lp-border-accent);
+    padding: 1rem 0 !important;
+}
+
+.accent-gradient {
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.lp-btn {
+    padding: 1rem 2.5rem;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.lp-btn-outline-accent {
+    border-color: var(--lp-accent);
+    color: var(--lp-accent);
+    background: transparent;
+}
+
+.lp-btn-outline-accent:hover {
+    background: var(--lp-accent);
+    color: #0A0A0A;
+}
+
+.lp-btn-outline-dim {
+    border-color: var(--lp-text-dim);
+    color: var(--lp-text-dim);
+    background: transparent;
+}
+
+.lp-btn-outline-dim:hover {
+    border-color: var(--lp-text-main);
+    color: var(--lp-text-main);
+}
+
+.lp-btn-accent {
+    background: var(--lp-accent);
+    color: #0A0A0A;
+}
+
+.lp-btn-accent:hover {
+    background: #deb887; /* Brighter accent */
+}
+
+/* Animations from premium */
+@keyframes lp-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse-lp {
+    animation: lp-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes lp-bounce {
+    0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+
+.animate-bounce-lp {
+    animation: lp-bounce 1s infinite;
+}
+
+/* Custom Scrollbar */
+.lp-custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.lp-custom-scroll::-webkit-scrollbar-track {
+    background: #0A0A0A;
+}
+.lp-custom-scroll::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+    border: 1px solid var(--lp-border-accent);
+}
+.lp-custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--lp-accent);
+}
+
+/* Helper Classes */
+.tracking-widest-2 { letter-spacing: 0.2em; }
+.tracking-widest-4 { letter-spacing: 0.4em; }
+
+[dir="rtl"] .font-arabic { font-family: 'Cairo', sans-serif !important; }

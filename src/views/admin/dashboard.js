@@ -18,6 +18,8 @@ export async function renderAdminDashboard(profile) {
                     <a href="/admin/announcements" class="nav-link" data-view="announcements">📢 Announcements</a>
                     <a href="/admin/test-dates" class="nav-link" data-view="test-dates">📅 Test Dates</a>
                     <a href="/admin/placement-tests" class="nav-link" data-view="placement-tests">📝 Placement Tests</a>
+                    <a href="/admin/test-results" class="nav-link" data-view="test-results">📊 Test Results</a>
+                    <a href="/admin/contact-submissions" class="nav-link" data-view="contact-submissions">📋 Contact Submissions</a>
                     <a href="/admin/profile" class="nav-link" data-view="profile">👤 My Profile</a>
                     <a href="/login" id="logout-btn" class="nav-link">🚪 Logout</a>
                 </nav>
@@ -170,6 +172,12 @@ async function loadAdminView(view, profile) {
             break
         case 'placement-tests':
             import('./placement_tests.js').then(m => m.renderPlacementTests(container, profile))
+            break
+        case 'test-results':
+            import('./test_results.js').then(m => m.renderTestResults(container))
+            break
+        case 'contact-submissions':
+            import('./contact_submissions.js').then(m => m.renderContactSubmissions(container))
             break
         case 'profile':
             import('../shared/profile.js').then(m => m.renderProfile(container, profile))
