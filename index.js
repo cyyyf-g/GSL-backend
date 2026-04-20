@@ -27,7 +27,15 @@ app.get('*all', (req, res) => {
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
-        res.status(404).send(`Error: index.html not found. Check if the build command created the 'dist' folder. Path tried: ${indexPath}`);
+        const rootFiles = fs.readdirSync(__dirname);
+        res.status(404).send(`
+            <h1>GSL Portal - Deployment Error</h1>
+            <p><strong>Error:</strong> index.html not found at <code>${indexPath}</code></p>
+            <p>Check if your Build Command (<code>npm run build</code>) is running successfully.</p>
+            <hr>
+            <h3>Files found at root:</h3>
+            <ul>${rootFiles.map(f => `<li>${f}</li>`).join('')}</ul>
+        `);
     }
 });
 
