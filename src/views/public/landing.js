@@ -13,7 +13,7 @@ export async function renderLanding(container) {
     const config = {};
     configData?.forEach(item => config[item.key] = item.value);
 
-    const render = () => {
+    const render = async () => {
         if (isPlacementTestOpen) {
             renderPlacementTest(container, currentLang, () => {
                 isPlacementTestOpen = false;
