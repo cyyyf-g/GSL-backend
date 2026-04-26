@@ -87,9 +87,7 @@ export async function renderStudents(container) {
                     status,
                     enrolled_at,
                     classes ( id, name, start_date )
-                ),
-                fees!left ( id, class_id, status, amount ),
-                attendance:attendance!attendance_student_id_fkey!left ( id, class_id, status )
+                )
             `)
             .eq('role', 'student')
 
@@ -258,10 +256,17 @@ export async function renderStudents(container) {
     document.getElementById('sort-by').addEventListener('change', applyFiltersAndSort)
 
     // Profile Modal Logic
-    function openProfileModal(student) {
+    async function openProfileModal(student) {
+        // Show loading state in modal or fetch first
+        // For better UX, we'll fetch then show
+        const [feesRes, attendanceRes] = await Promise.all([
+            supabase.from('fees').select('*').eq('student_id', student.id),
+            supabase.from('attendance').select('*, classes(name)').eq('student_id', student.id)
+        ])
+
         const enrollments = student.enrollments || []
-        const fees = student.fees || []
-        const attendance = student.attendance || []
+        const fees = feesRes.data || []
+        const attendance = attendanceRes.data || []
 
         // Calculate age
         let ageStr = 'N/A'
