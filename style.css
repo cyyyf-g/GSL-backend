@@ -326,6 +326,11 @@ table tr:hover {
   to { opacity: 1; }
 }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 .content {
   animation: fadeIn 0.4s ease-in-out;
 }
