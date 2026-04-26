@@ -34,7 +34,7 @@ app.use((req, res) => {
             <p>Check if your Build Command (<code>npm run build</code>) is running successfully.</p>
             <hr>
             <h3>Files found at root:</h3>
-            <ul>${rootFiles.map(f => \`<li>\${f}</li>\`).join('')}</ul>
+            <ul>${rootFiles.map(f => `<li>${f}</li>`).join('')}</ul>
         `);
     }
 });
