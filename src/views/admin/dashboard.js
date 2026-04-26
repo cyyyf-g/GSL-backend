@@ -4,9 +4,25 @@ export async function renderAdminDashboard(profile) {
     const mainContent = document.getElementById('main-content')
     mainContent.innerHTML = `
         <div class="dashboard-layout">
-            <aside class="sidebar">
+            <header class="mobile-header">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <h2 class="logo-text" style="font-size: 1.2rem; color: var(--secondary); margin: 0;">G<span>SL</span></h2>
+                </div>
+                <button id="hamburger" class="hamburger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </header>
+
+            <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+            <aside class="sidebar" id="sidebar">
                 <div class="sidebar-header">
-                    <h2 class="logo-text" style="font-size: 1.5rem; color: var(--secondary);">G<span>SL</span> Admin</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="logo-text" style="font-size: 1.5rem; color: var(--secondary);">G<span>SL</span> Admin</h2>
+                        <button id="sidebar-close" class="lg:hidden" style="background: none; border: none; color: white; cursor: pointer; display: none;">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
                     <p style="font-size: 0.8rem; color: var(--gray); font-style: italic;">${profile.full_name}</p>
                 </div>
                 <nav class="nav-links">
@@ -128,6 +144,12 @@ export async function renderAdminDashboard(profile) {
             loadView(view)
             navLinks.forEach(l => l.classList.remove('active'))
             e.currentTarget.classList.add('active')
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            }
         })
     })
 

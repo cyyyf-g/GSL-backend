@@ -50,8 +50,36 @@ export function renderLanding(container) {
                             
                             <a href="/login" class="lp-btn lp-btn-outline-accent" style="padding: 0.5rem 1.5rem; font-size: 0.7rem; border: 1px solid var(--lp-accent); color: var(--lp-accent); text-decoration: none; text-transform: uppercase; font-weight: bold; letter-spacing: 0.1em; transition: all 0.3s ease;">${t.nav.login}</a>
                         </div>
+
+                        <!-- Mobile Hamburger -->
+                        <button id="lp-hamburger" class="lg:hidden lp-hamburger" style="display: none; background: none; border: none; color: var(--lp-accent); cursor: pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                        </button>
                     </div>
                 </nav>
+
+                <!-- Mobile Menu -->
+                <div id="lp-mobile-menu" class="lp-mobile-menu">
+                    <button id="lp-close-menu" style="position: absolute; top: 2rem; right: 2rem; background: none; border: none; color: var(--lp-accent); cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                    <div style="display: flex; flex-direction: column; gap: 2rem; text-align: center;">
+                        <a href="#about" class="text-text-main hover:text-accent transition-colors uppercase font-bold tracking-widest text-lg" style="text-decoration: none; color: white;">${t.nav.about}</a>
+                        <a href="#courses" class="text-text-main hover:text-accent transition-colors uppercase font-bold tracking-widest text-lg" style="text-decoration: none; color: white;">${t.nav.courses}</a>
+                        <a href="#contact" class="text-text-main hover:text-accent transition-colors uppercase font-bold tracking-widest text-lg" style="text-decoration: none; color: white;">${t.nav.contact}</a>
+                        <button id="mobile-pt-btn" class="text-accent hover:text-white transition-colors uppercase font-bold tracking-widest text-lg" style="background: none; border: none; color: var(--lp-accent); cursor: pointer;">${t.nav.placement_test}</button>
+                        
+                        <div style="height: 1px; background: var(--lp-border-accent); margin: 1rem 0;"></div>
+                        
+                        <div style="display: flex; justify-content: center; gap: 1rem;">
+                            ${['en', 'ar', 'fr', 'de'].map(l => `
+                                <button class="lang-btn ${l === currentLang ? 'bg-accent text-bg' : 'text-text-dim'}" data-lang="${l}" style="border: none; background: ${l === currentLang ? 'var(--lp-accent)' : 'transparent'}; color: ${l === currentLang ? '#0A0A0A' : 'var(--lp-text-dim)'}; padding: 0.5rem 1rem; border-radius: 2px; font-weight: bold; cursor: pointer;">${l.toUpperCase()}</button>
+                            `).join('')}
+                        </div>
+                        
+                        <a href="/login" class="lp-btn lp-btn-accent" style="margin-top: 2rem;">${t.nav.login}</a>
+                    </div>
+                </div>
 
                 <!-- Hero Section -->
                 <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden" style="display: flex; align-items: center; justify-content: center; height: 100vh; position: relative;">
@@ -92,7 +120,7 @@ export function renderLanding(container) {
 
                 <!-- Stats -->
                 <section style="background: #0A0A0A; border-top: 1px solid var(--lp-border-accent); border-bottom: 1px solid var(--lp-border-accent); padding: 4rem 0;">
-                    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 4rem;">
+                    <div class="res-gap-4" style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center;">
                         <div style="text-align: center;">
                             <div id="counter-students" class="font-display text-accent" style="font-size: 4rem; color: var(--lp-accent); line-height: 1;">0</div>
                             <div class="text-[0.8rem] text-text-main uppercase tracking-widest mt-2" style="color: white; font-size: 0.7rem; letter-spacing: 0.2em;">${t.stats.students_label}</div>
@@ -109,8 +137,8 @@ export function renderLanding(container) {
                 </section>
 
                 <!-- About Section -->
-                <section id="about" style="padding: 8rem 0; overflow: hidden;">
-                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 4rem; align-items: center;">
+                <section id="about" class="res-p-8">
+                    <div class="res-grid-cols" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; align-items: center;">
                         <div>
                             <div class="text-accent font-bold" style="color: var(--lp-accent); font-size: 0.9rem; letter-spacing: 0.21em; margin-bottom: 1rem; text-transform: uppercase;">[ ${t.about.label} ]</div>
                             <h2 class="font-serif mb-8" style="font-size: 4rem; color: white; line-height: 1; margin-bottom: 2rem;">${t.about.headline}</h2>
@@ -150,7 +178,7 @@ export function renderLanding(container) {
                 </section>
 
                 <!-- Courses Section -->
-                <section id="courses" style="background: #0A0A0A; padding: 8rem 0; border-top: 1px solid var(--lp-border-accent);">
+                <section id="courses" class="res-p-8" style="background: #0A0A0A; border-top: 1px solid var(--lp-border-accent);">
                     <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; text-align: center;">
                         <div class="text-accent font-bold" style="color: var(--lp-accent); font-size: 0.9rem; letter-spacing: 0.21em; margin-bottom: 1rem; text-transform: uppercase;">[ ${t.courses.label} ]</div>
                         <h2 class="font-serif mb-4" style="font-size: 4rem; color: white;">${t.courses.headline}</h2>
@@ -158,7 +186,7 @@ export function renderLanding(container) {
                         
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
                             ${t.courses.list.map((c, i) => `
-                                <div class="bg-card-bg p-10 border border-accent-subtle hover:border-accent transition-all duration-500 group" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 2.5rem; text-align: left; border-left: 3px solid var(--lp-accent); cursor: pointer;">
+                                <div class="bg-card-bg res-p-4 border border-accent-subtle hover:border-accent transition-all duration-500 group" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); text-align: left; border-left: 3px solid var(--lp-accent); cursor: pointer;">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                                         <span style="font-size: 3rem; opacity: 0.6;">${c.icon}</span>
                                         <span style="background: rgba(197, 160, 89, 0.05); color: var(--lp-accent); border: 1px solid var(--lp-border-accent); padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.6rem; font-weight: bold; letter-spacing: 0.1em;">${c.level}</span>
@@ -172,8 +200,8 @@ export function renderLanding(container) {
                 </section>
 
                 <!-- Contact Section -->
-                <section id="contact" style="padding: 8rem 0; background: #0A0A0A; border-top: 1px solid var(--lp-border-accent);">
-                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 6rem;">
+                <section id="contact" class="res-p-8" style="background: #0A0A0A; border-top: 1px solid var(--lp-border-accent);">
+                    <div class="res-gap-4" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
                         <div>
                              <h2 class="font-serif uppercase tracking-widest text-text-main" style="font-size: 4rem; color: white; margin-bottom: 3rem; letter-spacing: 0.1em;">${t.contact.headline}</h2>
                              
@@ -199,7 +227,7 @@ export function renderLanding(container) {
                                 </div>
                              </div>
                         </div>
-                        <div style="background: var(--lp-card-bg); padding: 3rem; border: 1px solid var(--lp-border-accent); border-radius: 2px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                        <div class="res-p-4" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); border-radius: 2px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
                             <form id="contact-form" class="space-y-6" style="display: flex; flex-direction: column; gap: 1.5rem;">
                                 <div>
                                     <label style="display: block; font-size: 0.6rem; font-weight: bold; color: var(--lp-text-dim); text-transform: uppercase; letter-spacing: 0.21em; margin-bottom: 0.75rem;">${t.contact.form.name}</label>
@@ -258,6 +286,24 @@ export function renderLanding(container) {
             } else {
                 nav.classList.remove('lp-nav-scrolled');
             }
+        });
+
+        // Mobile Menu Logic
+        const mobileMenu = document.getElementById('lp-mobile-menu');
+        const lp_hamburger = document.getElementById('lp-hamburger');
+        const closeMenu = document.getElementById('lp-close-menu');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('active');
+        };
+
+        lp_hamburger?.addEventListener('click', toggleMenu);
+        closeMenu?.addEventListener('click', toggleMenu);
+
+        mobileMenu.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
         });
 
         // Typewriter
@@ -469,8 +515,8 @@ async function renderPlacementTest(container, lang, onBack) {
                     ` : ''}
 
                     ${state === 'TEST' ? `
-                        <div style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; animation: fadeIn 0.5s ease;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                        <div class="res-p-4" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; animation: fadeIn 0.5s ease;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; gap: 1rem;">
                                 <div>
                                     <p style="font-size: 0.6rem; color: var(--lp-text-dim); font-weight: bold; letter-spacing: 0.2em; text-transform: uppercase;">Question ${currentIdx + 1} of 12</p>
                                     <h3 class="font-serif italic text-accent" style="color: var(--lp-accent);">${selectedLang} Assessment</h3>
@@ -487,8 +533,8 @@ async function renderPlacementTest(container, lang, onBack) {
                                     placementQuestions[selectedLang][currentIdx].options.map(opt => `
                                         <button class="pt-ans-btn" data-ans="${opt}" style="background: transparent; border: 1px solid var(--lp-border-accent); padding: 1.25rem; text-align: left; color: white; cursor: pointer; transition: all 0.2s ease;">${opt}</button>
                                     `).join('') :
-                                    `<div style="display: flex; gap: 1rem;">
-                                        <input id="pt-fill-ans" type="text" placeholder="Your answer..." style="flex: 1; background: #0A0A0A; border: 1px solid var(--lp-border-accent); padding: 1rem; color: white; outline: none;">
+                                    `<div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                        <input id="pt-fill-ans" type="text" placeholder="Your answer..." style="flex: 1; min-width: 200px; background: #0A0A0A; border: 1px solid var(--lp-border-accent); padding: 1rem; color: white; outline: none;">
                                         <button id="pt-fill-btn" class="lp-btn lp-btn-accent" style="width: auto;">Submit</button>
                                     </div>`
                                 }
@@ -506,7 +552,7 @@ async function renderPlacementTest(container, lang, onBack) {
                     ` : ''}
 
                     ${state === 'INFO' ? `
-                         <div style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; text-align: center; animation: fadeIn 0.5s ease;">
+                         <div class="res-p-4" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; text-align: center; animation: fadeIn 0.5s ease;">
                             <h2 class="font-serif" style="font-size: 2.5rem; color: white; margin-bottom: 1rem;">Assessment Complete</h2>
                             <p style="color: var(--lp-text-dim); margin-bottom: 3rem;">Enter your details to reveal your final level.</p>
                             
@@ -525,7 +571,7 @@ async function renderPlacementTest(container, lang, onBack) {
                     ` : ''}
 
                     ${state === 'RESULTS' ? `
-                        <div style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; text-align: center; animation: slideUp 0.5s ease;">
+                        <div class="res-p-4" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 4rem; border-radius: 2px; text-align: center; animation: slideUp 0.5s ease;">
                             <div style="font-size: 5rem; margin-bottom: 2rem;">🏆</div>
                             <h2 class="font-serif" style="font-size: 3rem; color: white; line-height: 1;">Congratulations, ${userInfo.name}!</h2>
                             <p style="color: var(--lp-accent); font-size: 1.5rem; margin-top: 1rem; letter-spacing: 0.2em; font-weight: bold;">YOUR LEVEL IS ${getCEFRLevel(score)}</p>
@@ -542,7 +588,7 @@ async function renderPlacementTest(container, lang, onBack) {
                                 </div>
                             </div>
 
-                            <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                                 <button id="pt-restart" class="lp-btn lp-btn-outline-accent">Retake Test</button>
                                 <button id="pt-website" class="lp-btn lp-btn-accent">Back to Website</button>
                             </div>
