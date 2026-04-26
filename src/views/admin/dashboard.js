@@ -69,6 +69,22 @@ export async function renderAdminDashboard(profile) {
                         <label class="form-label">Password</label>
                         <input type="password" id="add-user-password" class="form-input" required minlength="6">
                     </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Gender (Optional)</label>
+                            <select id="add-user-gender" class="form-input">
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">DOB (Optional)</label>
+                            <input type="date" id="add-user-dob" class="form-input">
+                        </div>
+                    </div>
                     
                     <button type="submit" class="btn btn-primary" id="add-user-submit" style="margin-top: 1rem;">Create Account</button>
                     <p id="add-user-error" style="color: var(--danger); font-size: 0.8rem; text-align: center; display: none;"></p>
@@ -120,6 +136,20 @@ export async function renderAdminDashboard(profile) {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Create Account';
         } else {
+            // Update additional profile info
+            const gender = document.getElementById('add-user-gender').value;
+            const dob = document.getElementById('add-user-dob').value;
+            
+            if (gender || dob) {
+                await supabase
+                    .from('profiles')
+                    .update({ 
+                        gender: gender || null, 
+                        date_of_birth: dob || null 
+                    })
+                    .eq('id', data);
+            }
+
             alert(fullName + ' successfully created and auto-approved!');
             modal.style.display = 'none';
             submitBtn.disabled = false;
