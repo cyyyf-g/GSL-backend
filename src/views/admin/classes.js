@@ -196,7 +196,7 @@ export async function renderClasses(container) {
                     <td style="padding: 0.75rem 1rem; font-weight: 500;">${e.profiles?.full_name}</td>
                     <td style="padding: 0.75rem 1rem; font-size: 0.85rem;">${new Date(e.enrolled_at).toLocaleDateString()}</td>
                     <td style="padding: 0.75rem 1rem;">
-                        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 0.5rem; background: #fef9c3; color: #854d0e;">${e.status}</span>
+                        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 0.5rem; background: #dcfce7; color: #166534;">${e.status}</span>
                     </td>
                     <td style="padding: 0.75rem 1rem; text-align: right;">
                         <button style="color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem;" onclick="unenrollStudent('${e.id}')">Remove</button>
@@ -212,7 +212,7 @@ export async function renderClasses(container) {
         const { data: enrolledStudents } = await supabase.from('enrollments').select('student_id').eq('class_id', classId)
         const enrolledIds = enrolledStudents ? enrolledStudents.map(e => e.student_id) : []
 
-        const { data: allStudents } = await supabase.from('profiles').select('*').eq('role', 'student')
+        const { data: allStudents } = await supabase.from('profiles').select('*').eq('role', 'student').eq('status', 'active')
         
         if (allStudents) {
             const available = allStudents.filter(s => !enrolledIds.includes(s.id))

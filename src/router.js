@@ -59,6 +59,36 @@ export async function router() {
         return
     }
 
+    // Check for approved/active status for non-admins
+    if (profile.role !== 'admin' && profile.status !== 'active') {
+        const statusMsg = profile.status === 'pending' 
+            ? "Your account is currently pending administrative approval. Please check back later."
+            : profile.status === 'suspended'
+            ? "Your account has been suspended by an administrator. Please contact the school."
+            : profile.status === 'finished'
+            ? "Your course path has been marked as finished. Thank you for studying with us!"
+            : "Your account is not currently active.";
+
+        mainContent.innerHTML = `
+            <div class="auth-container" style="background: var(--lp-bg); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+                <div class="auth-card" style="background: var(--lp-card-bg); padding: 3rem; border-radius: 4px; box-shadow: var(--shadow-lg); text-align: center; max-width: 500px; border: 1px solid var(--lp-border-accent);">
+                    <h1 style="color: var(--lp-accent); margin-bottom: 1rem;">GSL</h1>
+                    <h2 style="color: white; margin-bottom: 1.5rem;">Account Access Restricted</h2>
+                    <p style="color: var(--lp-text-dim); margin-bottom: 2rem; line-height: 1.6;">${statusMsg}</p>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button class="lp-btn lp-btn-accent" onclick="location.reload()">Refresh Status</button>
+                        <button class="lp-btn" id="logout-restricted" style="background: transparent; border: 1px solid var(--lp-border-accent); color: white;">Logout</button>
+                    </div>
+                </div>
+            </div>
+        `
+        document.getElementById('logout-restricted')?.addEventListener('click', async () => {
+            await supabase.auth.signOut()
+            window.location.href = '/login'
+        })
+        return
+    }
+
     if (profile.role === 'admin') {
         renderAdminDashboard(profile)
     } else if (profile.role === 'teacher') {

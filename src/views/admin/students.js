@@ -31,18 +31,24 @@ export async function renderStudents(container) {
             <input type="text" id="student-search" placeholder="Search by name or email..." style="flex: 1; min-width: 250px; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--border);">
             
             <select id="status-filter" style="padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--border);">
-                <option value="">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-                <option value="dropped">Dropped</option>
+                <option value="">All School Statuses</option>
+                <option value="pending">Pending Approval</option>
+                <option value="active">Active Students</option>
+                <option value="suspended">Suspended</option>
+                <option value="finished">Finished</option>
+            </select>
+
+            <select id="enrollment-filter" style="padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                <option value="">All Enrollment</option>
+                <option value="enrolled">Has Enrollment</option>
                 <option value="none">No Enrollment</option>
             </select>
 
             <select id="sort-by" style="padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--border);">
-                <option value="name_asc">Name (A-Z)</option>
-                <option value="name_desc">Name (Z-A)</option>
                 <option value="date_desc">Newest First</option>
                 <option value="date_asc">Oldest First</option>
+                <option value="name_asc">Name (A-Z)</option>
+                <option value="name_desc">Name (Z-A)</option>
             </select>
         </div>
 
@@ -52,7 +58,8 @@ export async function renderStudents(container) {
                     <tr style="background: var(--primary); color: white;">
                         <th style="padding: 1rem; cursor: pointer;">Name</th>
                         <th style="padding: 1rem;">Email</th>
-                        <th style="padding: 1rem;">Enrollments</th>
+                        <th style="padding: 1rem;">School Status</th>
+                        <th style="padding: 1rem;">Courses</th>
                         <th style="padding: 1rem;">Joined Date</th>
                         <th style="padding: 1rem;">Actions</th>
                     </tr>
@@ -103,17 +110,22 @@ export async function renderStudents(container) {
         let filtered = allStudents.filter(s => {
             const matchesSearch = s.full_name?.toLowerCase().includes(searchTerm) || s.email?.toLowerCase().includes(searchTerm)
             
-            // Enrollment status check
+            // School status check
             let matchesStatus = true
             if (statusFilter) {
-                if (statusFilter === 'none') {
-                    matchesStatus = !s.enrollments || s.enrollments.length === 0
-                } else {
-                    matchesStatus = s.enrollments?.some(e => e.status === statusFilter)
-                }
+                matchesStatus = s.status === statusFilter
             }
 
-            return matchesSearch && matchesStatus
+            // Enrollment check
+            const enrollmentFilter = document.getElementById('enrollment-filter').value
+            let matchesEnrollment = true
+            if (enrollmentFilter === 'none') {
+                matchesEnrollment = !s.enrollments || s.enrollments.length === 0
+            } else if (enrollmentFilter === 'enrolled') {
+                matchesEnrollment = s.enrollments && s.enrollments.length > 0
+            }
+
+            return matchesSearch && matchesStatus && matchesEnrollment
         })
 
         // Sort logic
@@ -137,49 +149,84 @@ export async function renderStudents(container) {
         tableBody.innerHTML = dataList.map(student => {
             const enrollments = student.enrollments || []
             const coursesCount = enrollments.length
-            const activeCourses = enrollments.filter(e => e.status === 'active').length
             
-            let enrollmentSummary = '<span style="color: var(--gray);">Not Enrolled</span>'
-            if (coursesCount > 0) {
-                enrollmentSummary = `<span style="font-weight: 600; color: var(--primary);">${coursesCount} Courses</span>`
-                if (activeCourses > 0) {
-                    enrollmentSummary += ` <span style="background: var(--success); color: white; padding: 0.1rem 0.4rem; border-radius: 1rem; font-size: 0.7rem;">${activeCourses} Active</span>`
-                }
+            let statusBadge = ''
+            switch (student.status) {
+                case 'pending': 
+                    statusBadge = '<span style="background: #fef3c7; color: #92400e; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Pending Approval</span>'
+                    break
+                case 'active':
+                    statusBadge = '<span style="background: #dcfce7; color: #166534; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Active</span>'
+                    break
+                case 'suspended':
+                    statusBadge = '<span style="background: #fee2e2; color: #991b1b; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Suspended</span>'
+                    break
+                case 'finished':
+                    statusBadge = '<span style="background: #f1f5f9; color: #475569; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Finished</span>'
+                    break
+                default:
+                    statusBadge = `<span style="background: #f1f5f9; color: #475569; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem;">${student.status}</span>`
             }
 
             return `
                 <tr style="border-bottom: 1px solid var(--border); transition: var(--transition);" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">
                     <td style="padding: 1rem; font-weight: 600;">${student.full_name}</td>
                     <td style="padding: 1rem;">${student.email}</td>
-                    <td style="padding: 1rem; font-size: 0.9rem;">${enrollmentSummary}</td>
+                    <td style="padding: 1rem;">${statusBadge}</td>
+                    <td style="padding: 1rem; font-size: 0.9rem;">${coursesCount} Course(s)</td>
                     <td style="padding: 1rem; font-size: 0.85rem; color: var(--gray);">${new Date(student.created_at).toLocaleDateString()}</td>
-                    <td style="padding: 1rem; display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary btn-view-profile" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: var(--secondary); color: white;" data-id="${student.id}">View Profile</button>
-                        <button class="btn btn-secondary btn-edit-student" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto;" data-id="${student.id}">Edit</button>
-                        <button class="btn btn-delete-student" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: var(--danger); color: white; border: none;" data-id="${student.id}">Delete</button>
+                    <td style="padding: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        ${student.status === 'pending' ? `
+                            <button class="btn btn-primary btn-approve" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: var(--success);" data-id="${student.id}">Enroll / Approve</button>
+                        ` : ''}
+                        ${student.status === 'active' ? `
+                            <button class="btn btn-secondary btn-suspend" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: #ea580c; color: white;" data-id="${student.id}">Suspend</button>
+                            <button class="btn btn-secondary btn-finish" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: #64748b; color: white;" data-id="${student.id}">Mark Finished</button>
+                        ` : ''}
+                        ${student.status === 'suspended' || student.status === 'finished' ? `
+                            <button class="btn btn-primary btn-re-enroll" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: var(--primary);" data-id="${student.id}">Re-Enroll</button>
+                        ` : ''}
+                        <button class="btn btn-secondary btn-view-profile" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: var(--secondary); color: white;" data-id="${student.id}">View</button>
+                        <button class="btn btn-delete-student" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: var(--danger); color: white; border: none;" data-id="${student.id}" title="Delete Profile">×</button>
                     </td>
                 </tr>
             `
         }).join('')
 
-        // Add event listeners for view/edit/delete
+        // Add event listeners for view/edit/delete/status
         document.querySelectorAll('.btn-view-profile').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const student = allStudents.find(s => s.id === e.target.dataset.id)
                 openProfileModal(student)
             })
         })
-        document.querySelectorAll('.btn-edit-student').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const student = allStudents.find(s => s.id === e.target.dataset.id)
-                openEditModal(student)
+        
+        document.querySelectorAll('.btn-approve, .btn-re-enroll').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                await updateStudentStatus(e.target.dataset.id, 'active', 'Student enrolled successfully!')
+            })
+        })
+
+        document.querySelectorAll('.btn-suspend').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if (confirm('Are you sure you want to suspend this student?')) {
+                    await updateStudentStatus(e.target.dataset.id, 'suspended', 'Student suspended.')
+                }
+            })
+        })
+
+        document.querySelectorAll('.btn-finish').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if (confirm('Mark this student as finished?')) {
+                    await updateStudentStatus(e.target.dataset.id, 'finished', 'Student course path marked as finished.')
+                }
             })
         })
 
         document.querySelectorAll('.btn-delete-student').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                if (confirm('Are you sure? This will delete the student profile permanently. (The auth account will still exist in Supabase Dashboard)')) {
-                    const id = e.target.dataset.id
+                if (confirm('Are you sure? This will delete the student profile permanently.')) {
+                    const id = e.currentTarget.dataset.id
                     const { error } = await supabase.from('profiles').delete().eq('id', id)
                     if (error) alert(error.message)
                     else loadStudents()
@@ -188,9 +235,26 @@ export async function renderStudents(container) {
         })
     }
 
+    async function updateStudentStatus(id, newStatus, successMsg) {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ 
+                status: newStatus,
+                is_approved: newStatus === 'active' 
+            })
+            .eq('id', id)
+
+        if (error) alert(error.message)
+        else {
+            if (successMsg) alert(successMsg)
+            loadStudents()
+        }
+    }
+
     // Attach search/filter listeners
     document.getElementById('student-search').addEventListener('input', applyFiltersAndSort)
     document.getElementById('status-filter').addEventListener('change', applyFiltersAndSort)
+    document.getElementById('enrollment-filter').addEventListener('change', applyFiltersAndSort)
     document.getElementById('sort-by').addEventListener('change', applyFiltersAndSort)
 
     // Profile Modal Logic
