@@ -3,10 +3,15 @@ import { translations } from './translations.js'
 import { placementQuestions } from '../../data/placement_questions.js'
 import { initChatbot } from './chatbot.js'
 
-export function renderLanding(container) {
+export async function renderLanding(container) {
     let currentLang = localStorage.getItem('gsl_lang') || 'en';
     let isScrolled = false;
     let isPlacementTestOpen = false;
+
+    // Fetch dynamic content
+    const { data: configData } = await supabase.from('site_config').select('*');
+    const config = {};
+    configData?.forEach(item => config[item.key] = item.value);
 
     const render = () => {
         if (isPlacementTestOpen) {
@@ -19,6 +24,9 @@ export function renderLanding(container) {
 
         const t = translations[currentLang];
         const isRtl = currentLang === 'ar';
+
+        // Override dynamic note if available
+        const dynamicNote = config['hero_note'] ? config['hero_note'][currentLang] : t.hero.note;
 
         container.innerHTML = `
             <div class="lp-body lp-custom-scroll" dir="${isRtl ? 'rtl' : 'ltr'}" style="min-height: 100vh; background: var(--lp-bg); color: var(--lp-text-main); font-family: 'DM Sans', sans-serif;">
@@ -112,7 +120,7 @@ export function renderLanding(container) {
                         <div style="margin-top: 4rem; display: flex; justify-content: center;">
                              <div style="background: var(--lp-red-accent); color: white; padding: 0.5rem 1rem; border-radius: 2px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.21em; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 0 15px rgba(204,0,0,0.3);">
                                 <span style="width: 6px; height: 6px; background: white; border-radius: 50%; display: inline-block;"></span>
-                                ${t.hero.note}
+                                ${dynamicNote}
                              </div>
                         </div>
                     </div>
@@ -383,7 +391,7 @@ export function renderLanding(container) {
 
         initParticles();
         initStatsCounters();
-        initChatbot();
+        await initChatbot();
 
         // Handle internal links for GSL main app (popstate triggers router)
         container.querySelectorAll('a[href^="/"]').forEach(link => {

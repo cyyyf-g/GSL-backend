@@ -1,6 +1,43 @@
-export function initChatbot() {
+import { supabase } from '../../supabase.js'
+
+export async function initChatbot() {
     const existing = document.getElementById('greta-chatbot');
     if (existing) existing.remove();
+
+    // Fetch dynamic content
+    const { data: configData } = await supabase.from('site_config').select('*');
+    const config = {};
+    configData?.forEach(item => config[item.key] = item.value);
+
+    // Dynamic QA and Welcome
+    const welcomeMessages = {
+        en: "Hello! 😊 I'm Greta, GSL's virtual assistant. I'm here to help you with our courses in German, French, and English, as well as enrollment, placement tests, and more. What would you like to know?",
+        ar: "مرحباً! 😊 أنا غريتا، المساعدة الافتراضية لمدرسة GSL. أنا هنا لمساعدتك في كل ما يخص دوراتنا في اللغات الألمانية، الفرنسية، والإنجليزية، بالإضافة إلى التسجيل، اختبارات التحديد، وأكثر. بماذا يمكنني مساعدتك؟",
+        fr: "Bonjour ! 😊 Je suis Greta, l'assistante virtuelle de GSL. Je suis là pour vous aider avec nos cours d'allemand, de français et d'anglais, ainsi que pour l'inscription, les tests de niveau, et plus encore. Comment puis-je vous aider ?",
+        de: "Hallo! 😊 Ich bin Greta, die virtuelle Assistentin von GSL. Ich helfe Ihnen gerne bei Fragen zu unseren Deutsch-, Französisch- und Englischkursen sowie zur Anmeldung, den Einstufungstests und mehr. Wie kann ich Ihnen helfen?"
+    };
+
+    // Use DB data if available, otherwise fallback
+    const qaData = config['chatbot_qa'] || {
+        en: [
+            { keywords: ['course', 'level', 'classes', 'offer', 'learn'], answer: "GSL offers high-quality courses in German (A1-C2), French, and English. We specialize in General Language, Business Language, and Exam Preparation." },
+            { keywords: ['price', 'cost', 'fee', 'how much'], answer: "Fees vary depending on the course. Please contact us at 0673 93 76 33 for the current price list." },
+            { keywords: ['location', 'address', 'batna', 'where'], answer: "We are located at: Hai Kammouni, Batna, Algeria (Opposite foreigners residence)." },
+            { keywords: ['enroll', 'register', 'sign up'], answer: "To enroll, first take our free online placement test. Then visit us in Batna to confirm your spot!" }
+        ],
+        ar: [
+            { keywords: ['دورة', 'دروس', 'تعلم', 'مستوى'], answer: "تقدم مدرسة GSL دورات عالية الجودة في اللغات الألمانية (A1-C2)، الفرنسية، والإنجليزية." },
+            { keywords: ['سعر', 'تكلفة', 'كم'], answer: "تختلف الرسوم حسب اللغة وكثافة الدورة. يرجى الاتصال بنا على 0673 93 76 33." },
+            { keywords: ['مكان', 'عنوان', 'باتنة'], answer: "حي كموني، مقابل إقامة الأجانب، باتنة، الجزائر." }
+        ],
+        fr: [
+            { keywords: ['cours', 'apprendre', 'niveau'], answer: "GSL propose des cours d'Allemand (A1-C2), Français et Anglais." },
+            { keywords: ['prix', 'combien', 'tarif'], answer: "Les tarifs varient. Contactez-nous au 0673 93 76 33 pour plus de détails." }
+        ],
+        de: [
+            { keywords: ['kurs', 'lernen', 'niveau'], answer: "GSL bietet hochwertige Kurse in Deutsch (A1-C2), Französisch und Englisch an." }
+        ]
+    };
 
     const chatbotHtml = `
         <div id="greta-chatbot" class="fixed bottom-6 right-6 z-[100] font-sans">
@@ -151,34 +188,6 @@ export function initChatbot() {
         const container = document.getElementById('chat-messages');
         container.scrollTop = container.scrollHeight;
     }
-
-    const welcomeMessages = {
-        en: "Hello! 😊 I'm Greta, GSL's virtual assistant. I'm here to help you with our courses in German, French, and English, as well as enrollment, placement tests, and more. What would you like to know?",
-        ar: "مرحباً! 😊 أنا غريتا، المساعدة الافتراضية لمدرسة GSL. أنا هنا لمساعدتك في كل ما يخص دوراتنا في اللغات الألمانية، الفرنسية، والإنجليزية، بالإضافة إلى التسجيل، اختبارات التحديد، وأكثر. بماذا يمكنني مساعدتك؟",
-        fr: "Bonjour ! 😊 Je suis Greta, l'assistante virtuelle de GSL. Je suis là pour vous aider avec nos cours d'allemand, de français et d'anglais, ainsi que pour l'inscription, les tests de niveau, et plus encore. Comment puis-je vous aider ?",
-        de: "Hallo! 😊 Ich bin Greta, die virtuelle Assistentin von GSL. Ich helfe Ihnen gerne bei Fragen zu unseren Deutsch-, Französisch- und Englischkursen sowie zur Anmeldung, den Einstufungstests und mehr. Wie kann ich Ihnen helfen?"
-    };
-
-    const qaData = {
-        en: [
-            { keywords: ['course', 'level', 'classes', 'offer', 'learn'], answer: "GSL offers high-quality courses in German (A1-C2), French, and English. We specialize in General Language, Business Language, and Exam Preparation." },
-            { keywords: ['price', 'cost', 'fee', 'how much'], answer: "Fees vary depending on the course. Please contact us at 0673 93 76 33 for the current price list." },
-            { keywords: ['location', 'address', 'batna', 'where'], answer: "We are located at: Hai Kammouni, Batna, Algeria (Opposite foreigners residence)." },
-            { keywords: ['enroll', 'register', 'sign up'], answer: "To enroll, first take our free online placement test. Then visit us in Batna to confirm your spot!" }
-        ],
-        ar: [
-            { keywords: ['دورة', 'دروس', 'تعلم', 'مستوى'], answer: "تقدم مدرسة GSL دورات عالية الجودة في اللغات الألمانية (A1-C2)، الفرنسية، والإنجليزية." },
-            { keywords: ['سعر', 'تكلفة', 'كم'], answer: "تختلف الرسوم حسب اللغة وكثافة الدورة. يرجى الاتصال بنا على 0673 93 76 33." },
-            { keywords: ['مكان', 'عنوان', 'باتنة'], answer: "حي كموني، مقابل إقامة الأجانب، باتنة، الجزائر." }
-        ],
-        fr: [
-            { keywords: ['cours', 'apprendre', 'niveau'], answer: "GSL propose des cours d'Allemand (A1-C2), Français et Anglais." },
-            { keywords: ['prix', 'combien', 'tarif'], answer: "Les tarifs varient. Contactez-nous au 0673 93 76 33 pour plus de détails." }
-        ],
-        de: [
-            { keywords: ['kurs', 'lernen', 'niveau'], answer: "GSL bietet hochwertige Kurse in Deutsch (A1-C2), Französisch und Englisch an." }
-        ]
-    };
 
     function findBestMatch(input, lang) {
         input = input.toLowerCase();
