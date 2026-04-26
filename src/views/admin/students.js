@@ -89,7 +89,7 @@ export async function renderStudents(container) {
                     classes ( id, name, start_date )
                 ),
                 fees!left ( id, class_id, status, amount ),
-                attendance!left ( id, class_id, status )
+                attendance:attendance!attendance_student_id_fkey!left ( id, class_id, status )
             `)
             .eq('role', 'student')
 
