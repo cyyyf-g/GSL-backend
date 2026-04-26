@@ -12,8 +12,8 @@ export async function router() {
     
     // Public routes (no auth needed)
     if (path === '/') {
-        window.history.pushState({}, '', '/login')
-        renderLogin()
+        const { renderLanding } = await import('./views/public/landing.js')
+        renderLanding(mainContent)
         return
     }
     if (path === '/signup') {

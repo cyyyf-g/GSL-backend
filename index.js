@@ -22,7 +22,7 @@ app.use(express.static(distPath));
 
 // Handle SPA routing - send all requests to index.html
 // This allows client-side routing (like /login, /dashboard) to work
-app.get('*all', (req, res) => {
+app.get('*', (req, res) => {
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
