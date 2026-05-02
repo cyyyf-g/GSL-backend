@@ -5,7 +5,11 @@ export function renderLogin() {
     const mainContent = document.getElementById('main-content')
     mainContent.innerHTML = `
         <div class="auth-container" style="background: var(--lp-bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif;">
-            <div class="auth-card" style="background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 3rem; border-radius: 2px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 100%; max-width: 400px; animation: slideUp 0.5s ease;">
+            <div class="auth-card" style="position: relative; background: var(--lp-card-bg); border: 1px solid var(--lp-border-accent); padding: 3rem; border-radius: 2px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 100%; max-width: 400px; animation: slideUp 0.5s ease;">
+                <a href="https://gsl-front-end.vercel.app" style="position: absolute; top: 1.5rem; left: 1.5rem; color: var(--lp-text-dim); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 0.5rem; transition: color 0.3s ease; z-index: 10;" onmouseover="this.style.color='var(--lp-accent)'" onmouseout="this.style.color='var(--lp-text-dim)'">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back to Site
+                </a>
                 <div class="auth-header" style="text-align: center; margin-bottom: 2.5rem;">
                     <h1 class="font-serif" style="font-size: 3rem; color: var(--lp-accent); margin-bottom: 0.5rem;">GSL</h1>
                     <p class="tagline" style="color: var(--lp-text-dim); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.21em;">Berlin · Paris · London</p>
