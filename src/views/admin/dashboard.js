@@ -94,6 +94,21 @@ export async function renderAdminDashboard(profile) {
         </div>
     `;
 
+    // Sidebar Toggle Logic
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('sidebar-overlay');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+    };
+
+    hamburger?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', toggleSidebar);
+    sidebarClose?.addEventListener('click', toggleSidebar);
+
     // Modal Logic
     const modal = document.getElementById('admin-add-user-modal');
     const closeBtn = document.getElementById('admin-add-user-close');
